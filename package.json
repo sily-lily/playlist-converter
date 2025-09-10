@@ -1,0 +1,20 @@
+{
+  "name": "playlist-converter",
+  "version": "1.0.0-alpha",
+  "description": "Convert any public playlist between popular platforms like Apple Music, Spotify, and YouTube Music",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "dev": "node ./build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sily-lily/playlist-converter.git"
+  },
+  "author": "sily-lily",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sily-lily/playlist-converter/issues"
+  },
+  "homepage": "https://github.com/sily-lily/playlist-converter#readme"
+}
