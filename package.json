@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/sily-lily/playlist-converter/issues"
   },
-  "homepage": "https://github.com/sily-lily/playlist-converter#readme"
+  "homepage": "https://github.com/sily-lily/playlist-converter#readme",
+  "devDependencies": {
+    "@types/node": "^24.3.1"
+  }
 }
