@@ -50,4 +50,8 @@ main.write(`Available Music Apps (${availableMusicApps})`, 38, 18, focusedTextCo
 
 focusWindow("Saved Playlists", false);
 focusWindow("Available Music Apps", false);
+main.newSelectionMenuItem();
+main.newSelectionMenuItem();
+main.newSelectionMenuItem();
+main.newSelectionMenuItem();
 main.serve();

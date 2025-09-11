@@ -1,6 +1,10 @@
 import { Color3 } from "./RGB";
 import process from "node:process";
 
+function is4Multiple(input: number): boolean {
+    return input % 4 === 0;
+}
+
 type Drawable = {
     type: "frame" | "text",
     x: number,
@@ -122,7 +126,36 @@ export class Container {
     }
 
     serve(clear: boolean = true) {
-        if (clear) process.stdout.write("\x1b[2J\x1b[0f"); // clear + reset cursor
+        if (clear) process.stdout.write("\x1b[2J\x1b[0f");
         console.log(this.grid.map(row => row.join("")).join("\n") + "\n");
+    }
+
+    // Selection Menu
+
+    fetchSelectionMenuIndex(): number {
+        var index = 0;
+        for (const object of this.objects) {
+            console.log(object[0])
+            if (object[0].toLowerCase().includes("- selection menu")) index += 1;
+        }
+        return index;
+    }
+
+    //     newSelectionMenuItem(name: string = `Unknown Object Option ${this.fetchSelectionMenuIndex()} - Selection Menu`) {
+    //     const height = 4 + this.fetchSelectionMenuIndex() + 6;
+    //     this.new(62, 2, Color3.fromHex("#4c3a50ff"), 4, height, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name);
+    //     this.write(name, 4, 4, Color3.fromRGB(180, 180, 180), `${name} Title`);
+    // }
+
+    newSelectionMenuItem(name: string = `Unknown Object ${this.fetchSelectionMenuIndex()} - Selection Menu`) {
+        this.new(62, 2, Color3.fromHex("#4c3a50ff"), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name);
+    }
+
+    clearSelectionMenu() {
+        for (const object of this.objects) {
+            if (object[0].toLowerCase().includes("- selection menu")) {
+                this.delete(object[0]);
+            }
+        }
     }
 }
