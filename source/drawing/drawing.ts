@@ -37,12 +37,12 @@ export class Container {
     objects: Map<string, drawable> = new Map();
     focusedOption: string;
 
-    constructor(width: number = 76, height: number = 20) {
+    constructor(width: number = 70, height: number = 21) {
         this.focusedOption = "";
         this.width = width;
         this.height = height;
         this.grid = Array.from({ length: height + 1 }, () => Array(width + 1).fill(" "));
-        this.new(width, height, Color3.fromHex("#4c3a50ff"), 0, 0, "Container", true);
+        this.new(width, height, Color3.fromHex(fetchSettingsData().lineColor.unfocused), 0, 0, "Container", true);
     }
 
     private bounds(row: number, col: number) {
@@ -79,8 +79,8 @@ export class Container {
     }
 
     new(
-        width: number = 76, height: number = 20,
-        lineColor: Color3 = Color3.fromHex("#49364dff"),
+        width: number = 70, height: number = 21,
+        lineColor: Color3,
         X: number = 0, Y: number = 0,
         name: string,
         isFocused: boolean
@@ -93,7 +93,7 @@ export class Container {
     write(
         text: string,
         X: number, Y: number,
-        color: Color3 = Color3.fromHex("#ffffff"),
+        color: Color3 = Color3.fromHex(fetchSettingsData().textColor.focused),
         name: string,
         isFocused: boolean
     ) {
@@ -116,8 +116,8 @@ export class Container {
     isOptionFocused(name: string): boolean {
         var isFocused = false;
         for (const object of this.objects) {
-            if (object[0].toLowerCase() === name.toLowerCase() && object[1].focused) {
-                isFocused = object[1].focused;
+            if (this.focusedOption.toLowerCase().includes(name.toLowerCase())) {
+                isFocused = object[1].focused as boolean;
             }
         }
         return isFocused;
@@ -129,18 +129,23 @@ export class Container {
             var updateText = "";
             if (name.toLowerCase() === "saved playlists") {
                 updateText = isFocused ? `Your Saved Playlists (${fetchCacheData().savedPlaylists})` : "Unfocused - Your Saved Pla...";
-            } else if (name.toLowerCase() === "available music apps") {
-                updateText = isFocused ? `Available Music Apps (${fetchCacheData().musicApps.length})` : "Unfocused - Available Musi...";
+            } else if (name.toLowerCase() === "available apps") {
+                updateText = isFocused ? `Available Apps (${fetchCacheData().musicApps.length})` : "Unfocused - Available Apps...";
             }
 
-            this.update(`${name} Option`, { lineColor: Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused) });
+            this.update(`${name} Option`, {
+                lineColor: Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused),
+                focused: isFocused
+            });
+            
             this.update(`${name} Title`, {
                 text: updateText,
-                color: Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused)
+                color: Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused),
+                focused: isFocused
             });
 
             this.focusedOption = isFocused ? `${name} Option` : this.focusedOption;
-            this.update("Selection Menu Title", { text: this.focusedOption.trim() !== "" ? `${name} (${this.focusedOption.replace(" Option", "")})` : `${name} (No menu selected)` });
+            this.update("Selection Menu Title", { text: this.focusedOption.trim() !== "" ? `${base} (${this.focusedOption.replace(" Option", "")})` : `${base} (No menu selected)` });
         }
     }
 
@@ -176,8 +181,8 @@ export class Container {
     }
 
     newSelectionMenuItem(name: string = `Unknown Object ${this.fetchSelectionMenuIndex()} - Selection Menu`, isFocused: boolean) {
-        this.new(62, 2, Color3.fromHex("#4c3a50ff"), 4, 4 + this.fetchSelectionMenuIndex() * 3, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
-        this.write(name.replace(" - Selection Menu", ""), 6, 2 + this.fetchSelectionMenuIndex(), Color3.fromRGB(180, 180, 180), `${name} Title`, isFocused);
+        this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
+        this.write(name.replace(" - Selection Menu", ""), 6, this.fetchSelectionMenuIndex() * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} Title`, isFocused);
     }
 
     clearSelectionMenu() {
