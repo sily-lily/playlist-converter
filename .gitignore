@@ -1,3 +1,4 @@
 build/
 IDEA.txt
 cache.json
+node_modules/
