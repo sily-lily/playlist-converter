@@ -1,0 +1,10 @@
+{
+    "textColor": {
+        "focused": "#ffffff",
+        "unfocused": "#B4B4B4"
+    },
+    "lineColor": {
+        "focused": "#f2afffff",
+        "unfocused": "#4c3a50ff"
+    }
+}

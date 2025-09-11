@@ -1,11 +1,10 @@
+import { fetchCacheData, fetchProjectVersion, fetchSettingsData, formatJSON } from "../data";
 import { Color3 } from "./RGB";
 import process from "node:process";
+import path from "node:path";
+import { cache, settings } from "../types";
 
-function is4Multiple(input: number): boolean {
-    return input % 4 === 0;
-}
-
-type Drawable = {
+type drawable = {
     type: "frame" | "text",
     x: number,
     y: number,
@@ -13,7 +12,8 @@ type Drawable = {
     height?: number,
     text?: string,
     color?: Color3,
-    lineColor?: Color3
+    lineColor?: Color3,
+    focused?: boolean
 }
 
 export class Container {
@@ -34,13 +34,15 @@ export class Container {
     width: number;
     height: number;
     grid: string[][];
-    objects: Map<string, Drawable> = new Map();
+    objects: Map<string, drawable> = new Map();
+    focusedOption: string;
 
     constructor(width: number = 76, height: number = 20) {
+        this.focusedOption = "";
         this.width = width;
         this.height = height;
         this.grid = Array.from({ length: height + 1 }, () => Array(width + 1).fill(" "));
-        this.new(width, height, Color3.fromHex("#4c3a50ff"), 0, 0, "Container");
+        this.new(width, height, Color3.fromHex("#4c3a50ff"), 0, 0, "Container", true);
     }
 
     private bounds(row: number, col: number) {
@@ -80,10 +82,11 @@ export class Container {
         width: number = 76, height: number = 20,
         lineColor: Color3 = Color3.fromHex("#49364dff"),
         X: number = 0, Y: number = 0,
-        name: string
+        name: string,
+        isFocused: boolean
     ) {
         const startRow = Y % 2 === 0 && Y >= 1 ? Y / 2 : Y;
-        this.objects.set(name, { type: "frame", x: X, y: startRow, width, height, lineColor });
+        this.objects.set(name, { type: "frame", x: X, y: startRow, width, height, lineColor, focused: isFocused });
         this.redraw();
     }
 
@@ -91,13 +94,14 @@ export class Container {
         text: string,
         X: number, Y: number,
         color: Color3 = Color3.fromHex("#ffffff"),
-        name: string
+        name: string,
+        isFocused: boolean
     ) {
-        this.objects.set(name, { type: "text", x: X, y: Y, text, color });
+        this.objects.set(name, { type: "text", x: X, y: Y, text, color, focused: isFocused });
         this.redraw();
     }
 
-    update(name: string, props: Partial<Drawable>) {
+    update(name: string, props: Partial<drawable>) {
         const obj = this.objects.get(name);
         if (!obj) return;
         Object.assign(obj, props);
@@ -107,6 +111,37 @@ export class Container {
     delete(name: string) {
         this.objects.delete(name);
         this.redraw();
+    }
+
+    isOptionFocused(name: string): boolean {
+        var isFocused = false;
+        for (const object of this.objects) {
+            if (object[0].toLowerCase() === name.toLowerCase() && object[1].focused) {
+                isFocused = object[1].focused;
+            }
+        }
+        return isFocused;
+    }
+
+    focusObject(name: string, isFocused: boolean) {
+        if (this.focusedOption.toLowerCase() !== name.toLowerCase()) {
+            const base = `Lily's Playlist Converter [${fetchProjectVersion()}]`;
+            var updateText = "";
+            if (name.toLowerCase() === "saved playlists") {
+                updateText = isFocused ? `Your Saved Playlists (${fetchCacheData().savedPlaylists})` : "Unfocused - Your Saved Pla...";
+            } else if (name.toLowerCase() === "available music apps") {
+                updateText = isFocused ? `Available Music Apps (${fetchCacheData().musicApps.length})` : "Unfocused - Available Musi...";
+            }
+
+            this.update(`${name} Option`, { lineColor: Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused) });
+            this.update(`${name} Title`, {
+                text: updateText,
+                color: Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused)
+            });
+
+            this.focusedOption = isFocused ? `${name} Option` : this.focusedOption;
+            this.update("Selection Menu Title", { text: this.focusedOption.trim() !== "" ? `${name} (${this.focusedOption.replace(" Option", "")})` : `${name} (No menu selected)` });
+        }
     }
 
     private redraw() {
@@ -135,20 +170,14 @@ export class Container {
     fetchSelectionMenuIndex(): number {
         var index = 0;
         for (const object of this.objects) {
-            console.log(object[0])
             if (object[0].toLowerCase().includes("- selection menu")) index += 1;
         }
         return index;
     }
 
-    //     newSelectionMenuItem(name: string = `Unknown Object Option ${this.fetchSelectionMenuIndex()} - Selection Menu`) {
-    //     const height = 4 + this.fetchSelectionMenuIndex() + 6;
-    //     this.new(62, 2, Color3.fromHex("#4c3a50ff"), 4, height, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name);
-    //     this.write(name, 4, 4, Color3.fromRGB(180, 180, 180), `${name} Title`);
-    // }
-
-    newSelectionMenuItem(name: string = `Unknown Object ${this.fetchSelectionMenuIndex()} - Selection Menu`) {
-        this.new(62, 2, Color3.fromHex("#4c3a50ff"), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name);
+    newSelectionMenuItem(name: string = `Unknown Object ${this.fetchSelectionMenuIndex()} - Selection Menu`, isFocused: boolean) {
+        this.new(62, 2, Color3.fromHex("#4c3a50ff"), 4, 4 + this.fetchSelectionMenuIndex() * 3, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
+        this.write(name.replace(" - Selection Menu", ""), 6, 2 + this.fetchSelectionMenuIndex(), Color3.fromRGB(180, 180, 180), `${name} Title`, isFocused);
     }
 
     clearSelectionMenu() {

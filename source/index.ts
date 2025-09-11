@@ -1,57 +1,37 @@
+import { fetchCacheData, fetchSettingsData } from "./data";
 import { Container } from "./drawing/drawing";
 import { Color3 } from "./drawing/RGB";
 
-const main = new Container(70, 20);
-const unfocused = "#4c3a50ff";
-const focused = "#f2afffff";
-const unfocusedTextColor = Color3.fromRGB(180, 180, 180);
-const focusedTextColor = Color3.fromRGB(255, 255, 255);
+// Main Container
 
-const apps = [
-    "Apple Music",
-    "Spotify",
-    "YouTube Music"
-];
-const availableMusicApps = apps.length;
-const savedPlaylists = 0; // temp
-var focusedTab = "";
+const main = new Container(70, 21);
 
-function focusWindow(tab: string, isFocused: boolean) {
-    const base = "Lily's Playlist Converter [v1.0]";
-    var updateText = "";
-    if (tab.toLowerCase() === "saved playlists") {
-        updateText = isFocused ? `Your Saved Playlists (${savedPlaylists})` : "Unfocused - Your Saved Pla...";
-    } else if (tab.toLowerCase() === "available music apps") {
-        updateText = isFocused ? `Available Music Apps (${availableMusicApps})` : "Unfocused - Available Musi...";
-    }
-
-    main.update(`${tab} Option`, { lineColor: Color3.fromHex(isFocused ? focused : unfocused) });
-    main.update(`${tab} Title`, {
-        text: updateText,
-        color: isFocused ? focusedTextColor : unfocusedTextColor
-    });
-    
-    focusedTab = isFocused ? `${tab} Option` : focusedTab;
-    main.update("Selection Menu Title", { text: focusedTab.trim() !== "" ? `${base} (${focusedTab.replace(" Option", "")})` : `${base} (No menu selected)` });
-}
-
-main.new(66, 15, Color3.fromHex(focused), 2, 2, "Selection Menu");
-main.write("Lily's Playlist Converter [v1.0] (No menu selected)", 5, 1, focusedTextColor, "Selection Menu Title")
+main.new(66, 16, Color3.fromHex(fetchSettingsData().lineColor.focused), 2, 2, "Selection Menu", false);
+main.write("Lily's Playlist Converter [v1.0] (No menu selected)", 5, 1, Color3.fromHex(fetchSettingsData().textColor.focused), "Selection Menu Title", false)
 
 // Saved Playlists Option
 
-main.new(32, 2, Color3.fromHex(focused), 2, 34, "Saved Playlists Option");
-main.write(`Your Saved Playlists (${savedPlaylists})`, 4, 18, focusedTextColor, "Saved Playlists Title");
+main.new(32, 2, Color3.fromHex(fetchSettingsData().lineColor.focused), 2, 36, "Saved Playlists Option", false);
+main.write(`Your Saved Playlists (${fetchCacheData().savedPlaylists})`, 4, 19, Color3.fromHex(fetchSettingsData().textColor.focused), "Saved Playlists Title", false);
 
 // Music Apps Option
 
-main.new(32, 2, Color3.fromHex(focused), 36, 34, "Available Music Apps Option");
-main.write(`Available Music Apps (${availableMusicApps})`, 38, 18, focusedTextColor, "Available Music Apps Title");
+function listApps() {
+    if (!main.isOptionFocused("Available Music Apps Option")) return;
+    for (const app of fetchCacheData().musicApps) {
+        main.newSelectionMenuItem(app, false);
+    }
+}
 
-focusWindow("Saved Playlists", false);
-focusWindow("Available Music Apps", false);
-main.newSelectionMenuItem();
-main.newSelectionMenuItem();
-main.newSelectionMenuItem();
-main.newSelectionMenuItem();
+main.new(32, 2, Color3.fromHex(fetchSettingsData().lineColor.focused), 36, 36, "Available Music Apps Option", false);
+main.write(`Available Music Apps (${fetchCacheData().musicApps.length})`, 38, 19, Color3.fromHex(fetchSettingsData().textColor.focused), "Available Music Apps Title", false);
+
+// Pre-requisites
+
+main.focusObject("Available Music Apps", false);
+main.focusObject("Saved Playlists", false);
+listApps();
+
+// Launch the Program :3
+
 main.serve();
