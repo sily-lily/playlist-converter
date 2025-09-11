@@ -14,7 +14,7 @@ export class Color3 {
     }
 
     static new(R: number, G: number, B: number) {
-        return new Color3(R, G, B);
+        return new Color3(R * 255, G * 255, B * 255);
     }
 
     static fromRGB(R: number, G: number, B: number) {
