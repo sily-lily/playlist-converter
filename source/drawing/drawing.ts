@@ -86,19 +86,32 @@ export class Container {
         isFocused: boolean
     ) {
         const startRow = Y % 2 === 0 && Y >= 1 ? Y / 2 : Y;
-        this.objects.set(name, { type: "frame", x: X, y: startRow, width, height, lineColor, focused: isFocused });
+        this.objects.set(name, {
+            type: "frame",
+            x: X, y: startRow,
+            width, height,
+            lineColor,
+            focused: isFocused
+        });
         this.redraw();
     }
 
     write(
         text: string,
         X: number, Y: number,
-        color: Color3 = Color3.fromHex(fetchSettingsData().textColor.focused),
+        color: Color3,
         name: string,
-        isFocused: boolean
+        isFocused: boolean,
+        nodraw?: boolean
     ) {
-        this.objects.set(name, { type: "text", x: X, y: Y, text, color, focused: isFocused });
-        this.redraw();
+        this.objects.set(name, {
+            type: "text",
+            x: X, y: Y,
+            text,
+            color,
+            focused: isFocused
+        });
+        if (!nodraw) this.redraw();
     }
 
     update(name: string, props: Partial<drawable>) {
@@ -160,6 +173,24 @@ export class Container {
                     const currentCol = obj.x + index;
                     if (currentCol >= this.width) break;
                     this.grid[obj.y]![currentCol] = obj.color!.toAnsi(obj.text![index]!);
+                }
+                if (this.fetchSelectionMenuIndex() === 0) {
+                    this.write("  _  _  _       _", 4, 2, Color3.fromHex("#ffffff"), "Default Message (0)", true, true);
+                    this.write(" | |(_)| |_   _( )  ___", 4, 3, Color3.fromHex("#ffffff"), "Default Message (1)", true, true);
+                    this.write(" | || || | | | |/  / __|", 4, 4, Color3.fromHex("#ffffff"), "Default Message (2)", true, true);
+                    this.write(" | || || | |_| |   \\__ \\", 4, 5, Color3.fromHex("#ffffff"), "Default Message (3)", true, true);
+                    this.write(" |_||_||_|\\__, |   |___/", 4, 6, Color3.fromHex("#ffffff"), "Default Message (4)", true, true);
+                    this.write("          |___/", 4, 7, Color3.fromHex("#ffffff"), "Default Message (5)", true, true);
+                    this.write("        _             _ _     _                       ", 4, 8, Color3.fromHex("#ffffff"), "Default Message (6)", true, true);
+                    this.write("  _ __ | | __ _ _   _| (_)___| |_    __ _ _ __  _ __  ", 4, 9, Color3.fromHex("#ffffff"), "Default Message (7)", true, true);
+                    this.write(" | '_ \\| |/ _` | | | | | / __| __|  / _` | '_ \\| '_ \\ ", 4, 10, Color3.fromHex("#ffffff"), "Default Message (8)", true, true);
+                    this.write(" | |_) | | (_| | |_| | | \\__ \\ |_  | (_| | |_) | |_) |", 4, 11, Color3.fromHex("#ffffff"), "Default Message (9)", true, true);
+                    this.write(" | .__/|_|\\__,_|\\__, |_|_|___/\\__|  \\__,_| .__/| .__/ ", 4, 12, Color3.fromHex("#ffffff"), "Default Message (10)", true, true);
+                    this.write(" |_|            |___/                    |_|   |_|    ", 4, 13, Color3.fromHex("#ffffff"), "Default Message (11)", true, true);
+                } else {
+                    for (let index = 0; index <= 14; index++) {
+                        this.objects.delete(`Default Message (${index})`);
+                    }
                 }
             }
         }

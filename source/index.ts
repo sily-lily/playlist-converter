@@ -28,7 +28,7 @@ main.write(`Available Apps (${fetchCacheData().musicApps.length})`, 38, 19, Colo
 
 // Pre-requisites
 
-main.focusObject("Available Apps", true);
+main.focusObject("Available Apps", false);
 main.focusObject("Saved Playlists", false);
 listApps();
 
