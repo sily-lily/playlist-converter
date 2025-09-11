@@ -1,6 +1,8 @@
 /**
  * 
- * Inspired by Roblox's Color3 class.
+ *  https://create.roblox.com/docs/reference/engine/datatypes/Color3
+ *  Inspired by Roblox's "Color3" class!! :3
+ * 
  */
 export class Color3 {
     R: number = 0;
