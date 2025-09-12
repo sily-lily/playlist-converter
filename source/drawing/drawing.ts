@@ -1,8 +1,6 @@
 import { fetchCacheData, fetchProjectVersion, fetchSettingsData, formatJSON } from "../data";
 import { Color3 } from "./RGB";
 import process from "node:process";
-import path from "node:path";
-import { cache, settings } from "../types";
 
 type drawable = {
     type: "frame" | "text",
@@ -31,40 +29,43 @@ export class Container {
         centerSplit: "╬"
     }
 
+    maxPage: number;
     width: number;
     height: number;
     grid: string[][];
     objects: Map<string, drawable> = new Map();
     focusedOption: string;
+    menuItems: [string, number][];
+    cache: any[];
 
     constructor(width: number = 70, height: number = 21) {
         this.focusedOption = "";
+        this.cache = [];
+        this.menuItems = [];
+        this.maxPage = 0;
         this.width = width;
         this.height = height;
         this.grid = Array.from({ length: height + 1 }, () => Array(width + 1).fill(" "));
         this.new(width, height, Color3.fromHex(fetchSettingsData().lineColor.unfocused), 0, 0, "Container", true);
     }
 
-    private bounds(row: number, col: number) {
-        while (this.grid.length <= row) {
-            this.grid.push(Array(this.width + 1).fill(" "));
-        }
-
-        if ((this.grid as any[])[0].length <= col) {
-            for (let r = 0; r < this.grid.length; r++) {
-                this.grid[r] = (this.grid as any[])[r].concat(
-                    Array(col - (this.grid as any[])[r].length + 1).fill(" ")
-                );
-            }
-            this.width = col;
-        }
-    }
-
-    private draw(startRow: number, startCol: number, width: number, height: number, lineColor: Color3) {
+    private draw(
+        startRow: number, startCol: number,
+        width: number, height: number,
+        lineColor: Color3
+    ) {
         const highestRow = startRow + height;
         const highestCol = startCol + width;
         for (let row = startRow; row <= highestRow; row++) {
-            this.bounds(row, highestCol);
+            if (!this.grid[row]) {
+                this.grid[row] = [];
+            }
+
+            if (this.grid[row]!.length <= highestCol) {
+                const extra = highestCol - this.grid[row]!.length + 1;
+                this.grid[row] = this.grid[row]!.concat(Array(extra).fill(" "));
+            }
+
             for (let col = startCol; col <= highestCol; col++) {
                 let frame = " ";
                 if (row === startRow && col === startCol) frame = this.sides.topLeft;
@@ -175,18 +176,18 @@ export class Container {
                     this.grid[obj.y]![currentCol] = obj.color!.toAnsi(obj.text![index]!);
                 }
                 if (this.fetchSelectionMenuIndex() === 0) {
-                    this.write("  _  _  _       _", 4, 2, Color3.fromHex("#ffffff"), "Default Message (0)", true, true);
-                    this.write(" | |(_)| |_   _( )  ___", 4, 3, Color3.fromHex("#ffffff"), "Default Message (1)", true, true);
-                    this.write(" | || || | | | |/  / __|", 4, 4, Color3.fromHex("#ffffff"), "Default Message (2)", true, true);
-                    this.write(" | || || | |_| |   \\__ \\", 4, 5, Color3.fromHex("#ffffff"), "Default Message (3)", true, true);
-                    this.write(" |_||_||_|\\__, |   |___/", 4, 6, Color3.fromHex("#ffffff"), "Default Message (4)", true, true);
-                    this.write("          |___/", 4, 7, Color3.fromHex("#ffffff"), "Default Message (5)", true, true);
-                    this.write("        _             _ _     _                       ", 4, 8, Color3.fromHex("#ffffff"), "Default Message (6)", true, true);
-                    this.write("  _ __ | | __ _ _   _| (_)___| |_    __ _ _ __  _ __  ", 4, 9, Color3.fromHex("#ffffff"), "Default Message (7)", true, true);
-                    this.write(" | '_ \\| |/ _` | | | | | / __| __|  / _` | '_ \\| '_ \\ ", 4, 10, Color3.fromHex("#ffffff"), "Default Message (8)", true, true);
-                    this.write(" | |_) | | (_| | |_| | | \\__ \\ |_  | (_| | |_) | |_) |", 4, 11, Color3.fromHex("#ffffff"), "Default Message (9)", true, true);
+                    this.write("  _  _  _       _",                                          4, 2,  Color3.fromHex("#ffffff"), "Default Message (0)",  true, true);
+                    this.write(" | |(_)| |_   _( )  ___",                                    4, 3,  Color3.fromHex("#ffffff"), "Default Message (1)",  true, true);
+                    this.write(" | || || | | | |/  / __|",                                   4, 4,  Color3.fromHex("#ffffff"), "Default Message (2)",  true, true);
+                    this.write(" | || || | |_| |   \\__ \\",                                 4, 5,  Color3.fromHex("#ffffff"), "Default Message (3)",  true, true);
+                    this.write(" |_||_||_|\\__, |   |___/",                                  4, 6,  Color3.fromHex("#ffffff"), "Default Message (4)",  true, true);
+                    this.write("          |___/",                                            4, 7,  Color3.fromHex("#ffffff"), "Default Message (5)",  true, true);
+                    this.write("        _             _ _     _                       ",     4, 8,  Color3.fromHex("#ffffff"), "Default Message (6)",  true, true);
+                    this.write("  _ __ | | __ _ _   _| (_)___| |_    __ _ _ __  _ __  ",     4, 9,  Color3.fromHex("#ffffff"), "Default Message (7)",  true, true);
+                    this.write(" | '_ \\| |/ _` | | | | | / __| __|  / _` | '_ \\| '_ \\ ",  4, 10, Color3.fromHex("#ffffff"), "Default Message (8)",  true, true);
+                    this.write(" | |_) | | (_| | |_| | | \\__ \\ |_  | (_| | |_) | |_) |",   4, 11, Color3.fromHex("#ffffff"), "Default Message (9)",  true, true);
                     this.write(" | .__/|_|\\__,_|\\__, |_|_|___/\\__|  \\__,_| .__/| .__/ ", 4, 12, Color3.fromHex("#ffffff"), "Default Message (10)", true, true);
-                    this.write(" |_|            |___/                    |_|   |_|    ", 4, 13, Color3.fromHex("#ffffff"), "Default Message (11)", true, true);
+                    this.write(" |_|            |___/                    |_|   |_|    ",     4, 13, Color3.fromHex("#ffffff"), "Default Message (11)", true, true);
                 } else {
                     for (let index = 0; index <= 14; index++) {
                         this.objects.delete(`Default Message (${index})`);
@@ -206,14 +207,39 @@ export class Container {
     fetchSelectionMenuIndex(): number {
         var index = 0;
         for (const object of this.objects) {
-            if (object[0].toLowerCase().includes("- selection menu")) index += 1;
+            if (object[0].toLowerCase().includes("- selection menu")) index++;
         }
         return index;
     }
 
     newSelectionMenuItem(name: string = `Unknown Object ${this.fetchSelectionMenuIndex()} - Selection Menu`, isFocused: boolean) {
-        this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
-        this.write(name.replace(" - Selection Menu", ""), 6, this.fetchSelectionMenuIndex() * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} Title`, isFocused);
+        const index = this.fetchSelectionMenuIndex();
+        this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 3, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
+        this.write(name.replace(" - Selection Menu", ""), 6, index * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} Title`, isFocused);
+        var pageNumber = 0;
+        if (this.menuItems.length !== 0) {
+            this.menuItems.forEach((value: [string, number], index: number) => {
+                pageNumber = Math.floor(index / 5) + 1;
+                this.menuItems[index] = [value[0], pageNumber];
+            });
+            this.maxPage = Math.ceil(this.menuItems.length / 5);
+        }
+        this.menuItems.push([name, pageNumber]);
+    }
+
+    selectPage(page: number) {
+        this.clearSelectionMenu();
+        if (page > this.maxPage || page < 1) {
+            this.selectPage(1);
+        } else {
+            this.update("Selection Menu Title", { text: `Lily's Playlist Converter [${fetchProjectVersion()}] (Page ${page} of ${this.maxPage})` });
+            for (const item of this.menuItems) {
+                if (item[1] === page && !this.cache.includes(item[0])) {
+                    this.cache.push(item[0]);
+                    this.newSelectionMenuItem(item[0], false);
+                }
+            }
+        }
     }
 
     clearSelectionMenu() {

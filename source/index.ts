@@ -4,7 +4,7 @@ import { Color3 } from "./drawing/RGB";
 
 // Main Container
 
-const main = new Container(70, 21);
+const main = new Container();
 
 main.new(66, 16, Color3.fromHex(fetchSettingsData().lineColor.focused), 2, 2, "Selection Menu", false);
 main.write(`Lily's Playlist Converter [${fetchProjectVersion()}] (No menu selected)`, 5, 1, Color3.fromHex(fetchSettingsData().textColor.focused), "Selection Menu Title", false)
@@ -19,8 +19,9 @@ main.write(`Your Saved Playlists (${fetchCacheData().savedPlaylists})`, 4, 19, C
 function listApps() {
     if (!main.isOptionFocused("Available Apps Option")) return;
     for (const app of fetchCacheData().musicApps) {
-        main.newSelectionMenuItem(app, false);
+        main.newSelectionMenuItem(`${app} - Selection Menu`, false);
     }
+    main.selectPage(1);
 }
 
 main.new(32, 2, Color3.fromHex(fetchSettingsData().lineColor.focused), 36, 36, "Available Apps Option", false);
@@ -28,7 +29,7 @@ main.write(`Available Apps (${fetchCacheData().musicApps.length})`, 38, 19, Colo
 
 // Pre-requisites
 
-main.focusObject("Available Apps", false);
+main.focusObject("Available Apps", true);
 main.focusObject("Saved Playlists", false);
 listApps();
 
