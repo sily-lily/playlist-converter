@@ -1,4 +1,4 @@
-import { fetchCacheData, fetchProjectVersion, fetchSettingsData, formatJSON } from "../data";
+import { fetchCacheData, fetchProjectVersion, fetchSettingsData, formatJSON } from "../modules/data";
 import { Color3 } from "./RGB";
 import process from "node:process";
 
@@ -123,23 +123,6 @@ export class Container {
         this.redraw();
     }
 
-    fetchData(name: string): drawable {
-        const obj = this.objects.get(name);
-        if (!obj) return {} as drawable;
-        return {
-            type: obj.type,
-            x: obj.x,
-            y: obj.y,
-            width: obj.width,
-            height: obj.height,
-            text: obj.text,
-            color: obj.color,
-            lineColor: obj.lineColor,
-            focused: obj.focused
-        } as drawable;
-    }
-
-
     delete(name: string) {
         this.objects.delete(name);
         this.redraw();
@@ -160,7 +143,7 @@ export class Container {
             const base = `Lily's Playlist Converter [${fetchProjectVersion()}]`;
             var updateText = "";
             if (name.toLowerCase() === "saved playlists") {
-                updateText = isFocused ? `Your Saved Playlists (${fetchCacheData().savedPlaylists})` : "Unfocused - Your Saved Pla...";
+                updateText = isFocused ? `Your Saved Playlists (${fetchCacheData().savedPlaylists.length})` : "Unfocused - Your Saved Pla...";
             } else if (name.toLowerCase() === "available apps") {
                 updateText = isFocused ? `Available Apps (${fetchCacheData().musicApps.length})` : "Unfocused - Available Apps...";
             }

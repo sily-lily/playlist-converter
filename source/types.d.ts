@@ -1,5 +1,5 @@
 export type cache = {
-    savedPlaylists: number,
+    savedPlaylists: Array<any>,
     musicApps: Array<string>
 }
 
