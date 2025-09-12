@@ -21,7 +21,6 @@ function listApps() {
     for (const app of fetchCacheData().musicApps) {
         main.newSelectionMenuItem(app, false);
     }
-    // main.selectPage(1);
 }
 
 main.new(32, 2, Color3.fromHex(fetchSettingsData().lineColor.focused), 36, 36, "Available Apps Option", false);
@@ -32,6 +31,7 @@ main.write(`Available Apps (${fetchCacheData().musicApps.length})`, 38, 19, Colo
 main.focusObject("Available Apps", true);
 main.focusObject("Saved Playlists", false);
 listApps();
+main.selectPage(2);
 
 // Launch the Program :3
 

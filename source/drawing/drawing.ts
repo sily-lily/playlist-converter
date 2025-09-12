@@ -84,7 +84,8 @@ export class Container {
         lineColor: Color3,
         X: number = 0, Y: number = 0,
         name: string,
-        isFocused: boolean
+        isFocused: boolean,
+        nodraw?: boolean
     ) {
         const startRow = Y % 2 === 0 && Y >= 1 ? Y / 2 : Y;
         this.objects.set(name, {
@@ -94,7 +95,7 @@ export class Container {
             lineColor,
             focused: isFocused
         });
-        this.redraw();
+        if (!nodraw) this.redraw();
     }
 
     write(
@@ -233,15 +234,14 @@ export class Container {
         var pageNumber = 1;
         if (this.menuItems.length !== 0) {
             this.menuItems.forEach((value: [string, number], index: number) => {
-                pageNumber = Math.floor(index / 4) + 1;
+                pageNumber = Math.floor(index / 5) + 1;
                 this.menuItems[index] = [value[0], pageNumber];
             });
             this.maxPage = Math.ceil(this.menuItems.length / 4);
         }
 
         this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
-        this.write(name.replace(" - Selection Menu", "") + ` (Page: ${pageNumber})`, 6, this.fetchSelectionMenuIndex() * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} Title`, isFocused);
-        this.update("Selection Menu Title", { text: `Lily's Playlist Converter [${fetchProjectVersion()}] (Page ${pageNumber} of ${this.maxPage})` });
+        this.write(name.replace(" - Selection Menu", ""), 6, this.fetchSelectionMenuIndex() * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} - Selection Title`, isFocused);
         this.menuItems.push([name, pageNumber]);
     }
 
@@ -253,6 +253,7 @@ export class Container {
             this.update("Selection Menu Title", { text: `Lily's Playlist Converter [${fetchProjectVersion()}] (Page ${page} of ${this.maxPage})` });
             for (const item of this.menuItems) {
                 if (item[1] === page && !this.cache.includes(item[0])) {
+                    console.log(item[0], item[1])
                     this.cache.push(item[0]);
                     this.newSelectionMenuItem(item[0], false);
                 }
@@ -263,6 +264,8 @@ export class Container {
     clearSelectionMenu() {
         for (const object of this.objects) {
             if (object[0].toLowerCase().includes("- selection menu")) {
+                this.delete(object[0]);
+            } else if (object[0].toLowerCase().includes("- selection title")) {
                 this.delete(object[0]);
             }
         }
