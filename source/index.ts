@@ -21,6 +21,7 @@ function listApps() {
     for (const app of fetchCacheData().musicApps) {
         main.newSelectionMenuItem(app, false);
     }
+    main.selectPage(1);
 }
 
 main.new(32, 2, Color3.fromHex(fetchSettingsData().lineColor.focused), 36, 36, "Available Apps Option", false);
@@ -31,34 +32,7 @@ main.write(`Available Apps (${fetchCacheData().musicApps.length})`, 38, 19, Colo
 main.focusObject("Available Apps", true);
 main.focusObject("Saved Playlists", false);
 listApps();
-main.selectPage(2);
 
 // Launch the Program :3
 
 main.serve();
-
-// import { fetchCacheData, fetchProjectVersion, fetchSettingsData } from "./data";
-// import { Container } from "./drawing/drawing";
-// import { Color3 } from "./drawing/RGB";
-
-// // Main Container
-
-
-// // Saved Playlists Option
-
-// // Apps Option
-
-
-
-// main.new(32, 2, Color3.fromHex(fetchSettingsData().lineColor.focused), 36, 36, "Available Apps Option", false);
-// main.write(`Available Apps (${fetchCacheData().musicApps.length})`, 38, 19, Color3.fromHex(fetchSettingsData().textColor.focused), "Available Apps Title", false);
-
-// // Pre-requisites
-
-// main.focusObject("Available Apps", true);
-// main.focusObject("Saved Playlists", false);
-// listApps();
-
-// // Launch the Program :3
-
-// main.serve();

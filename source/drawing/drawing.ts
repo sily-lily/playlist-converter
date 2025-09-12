@@ -253,7 +253,6 @@ export class Container {
             this.update("Selection Menu Title", { text: `Lily's Playlist Converter [${fetchProjectVersion()}] (Page ${page} of ${this.maxPage})` });
             for (const item of this.menuItems) {
                 if (item[1] === page && !this.cache.includes(item[0])) {
-                    console.log(item[0], item[1])
                     this.cache.push(item[0]);
                     this.newSelectionMenuItem(item[0], false);
                 }
