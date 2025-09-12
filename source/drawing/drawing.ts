@@ -213,21 +213,22 @@ export class Container {
     }
 
     newSelectionMenuItem(name: string = `Unknown Object ${this.fetchSelectionMenuIndex()} - Selection Menu`, isFocused: boolean) {
-        const index = this.fetchSelectionMenuIndex();
-        this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 3, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
-        this.write(name.replace(" - Selection Menu", ""), 6, index * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} Title`, isFocused);
+        this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
+        this.write(name.replace(" - Selection Menu", ""), 6, this.fetchSelectionMenuIndex() * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} Title`, isFocused);
         var pageNumber = 0;
         if (this.menuItems.length !== 0) {
             this.menuItems.forEach((value: [string, number], index: number) => {
-                pageNumber = Math.floor(index / 5) + 1;
+                pageNumber = Math.floor(index / 4) + 1;
                 this.menuItems[index] = [value[0], pageNumber];
             });
-            this.maxPage = Math.ceil(this.menuItems.length / 5);
+            this.maxPage = Math.ceil(this.menuItems.length / 4);
         }
+
         this.menuItems.push([name, pageNumber]);
     }
 
     selectPage(page: number) {
+        console.log(`Page: ${page}`, `Items: ${this.menuItems.length}`)
         this.clearSelectionMenu();
         if (page > this.maxPage || page < 1) {
             this.selectPage(1);
