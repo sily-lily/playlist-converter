@@ -122,6 +122,23 @@ export class Container {
         this.redraw();
     }
 
+    fetchData(name: string): drawable {
+        const obj = this.objects.get(name);
+        if (!obj) return {} as drawable;
+        return {
+            type: obj.type,
+            x: obj.x,
+            y: obj.y,
+            width: obj.width,
+            height: obj.height,
+            text: obj.text,
+            color: obj.color,
+            lineColor: obj.lineColor,
+            focused: obj.focused
+        } as drawable;
+    }
+
+
     delete(name: string) {
         this.objects.delete(name);
         this.redraw();
@@ -213,9 +230,7 @@ export class Container {
     }
 
     newSelectionMenuItem(name: string = `Unknown Object ${this.fetchSelectionMenuIndex()} - Selection Menu`, isFocused: boolean) {
-        this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
-        this.write(name.replace(" - Selection Menu", ""), 6, this.fetchSelectionMenuIndex() * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} Title`, isFocused);
-        var pageNumber = 0;
+        var pageNumber = 1;
         if (this.menuItems.length !== 0) {
             this.menuItems.forEach((value: [string, number], index: number) => {
                 pageNumber = Math.floor(index / 4) + 1;
@@ -224,12 +239,14 @@ export class Container {
             this.maxPage = Math.ceil(this.menuItems.length / 4);
         }
 
+        this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
+        this.write(name.replace(" - Selection Menu", "") + ` (Page: ${pageNumber})`, 6, this.fetchSelectionMenuIndex() * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} Title`, isFocused);
+        this.update("Selection Menu Title", { text: `Lily's Playlist Converter [${fetchProjectVersion()}] (Page ${pageNumber} of ${this.maxPage})` });
         this.menuItems.push([name, pageNumber]);
     }
 
     selectPage(page: number) {
-        console.log(`Page: ${page}`, `Items: ${this.menuItems.length}`)
-        this.clearSelectionMenu();
+        if (this.fetchSelectionMenuIndex() !== 0) this.clearSelectionMenu();
         if (page > this.maxPage || page < 1) {
             this.selectPage(1);
         } else {

@@ -21,7 +21,7 @@ function listApps() {
     for (const app of fetchCacheData().musicApps) {
         main.newSelectionMenuItem(app, false);
     }
-    main.selectPage(1);
+    // main.selectPage(1);
 }
 
 main.new(32, 2, Color3.fromHex(fetchSettingsData().lineColor.focused), 36, 36, "Available Apps Option", false);
