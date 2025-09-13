@@ -15,8 +15,7 @@ export function fetchCacheData(): cache {
 }
 
 export function fetchProjectVersion(): string {
-    type nodePackage = {
+    return (formatJSON(path.join(process.cwd(), "package.json")) as {
         version: string
-    }
-    return (formatJSON(path.join(process.cwd(), "package.json")) as nodePackage).version;
+    }).version;
 }
