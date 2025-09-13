@@ -33,40 +33,41 @@ class InputManager {
 
 export function makeInputs(container: Container) {
     const inputManager = new InputManager();
-    inputManager.init((pressed: string) => {
-        if (container.isOptionFocused("Saved Playlists")) {
-            if (pressed === "right") {
+    const setFocus = (...names: string[]) => {
+        ["Saved Playlists", "Available Apps", "Selection Menu"].forEach(option => {
+            container.focusObject(option, names.includes(option));
+        });
+    };
+
+    const transitions: Record<string, Record<string, () => void>> = {
+        "Saved Playlists": {
+            right: () => {
                 container.clearSelectionMenu();
-                container.focusObject("Saved Playlists", false);
-                container.focusObject("Selection Menu", false);
-                container.focusObject("Available Apps", true);
+                setFocus("Available Apps");
                 listApps();
-            } else if (pressed === "up") {
-                container.focusObject("Saved Playlists", false);
-                container.focusObject("Available Apps", false);
-                container.focusObject("Selection Menu", true);
-            }
-        } else if (container.isOptionFocused("Available Apps")) {
-            if (pressed === "left") {
+            },
+            up: () => setFocus("Selection Menu")
+        },
+        "Available Apps": {
+            left: () => {
                 container.clearSelectionMenu();
-                container.focusObject("Available Apps", false);
-                container.focusObject("Selection Menu", false);
-                container.focusObject("Saved Playlists", true);
+                setFocus("Saved Playlists");
                 listPlaylists();
-            } else if (pressed === "up") {
-                container.focusObject("Available Apps", false);
-                container.focusObject("Saved Playlists", false);
-                container.focusObject("Selection Menu", true);
-            }
-        } else {
-            if (pressed === "escape") {
+            },
+            up: () => setFocus("Selection Menu")
+        },
+        "Selection Menu": {
+            escape: () => {
                 container.clearSelectionMenu();
-                container.focusObject("Selection Menu", false);
-                container.focusObject("Available Apps", false);
-                container.focusObject("Saved Playlists", true);
+                setFocus("Saved Playlists");
             }
         }
+    };
 
+    inputManager.init((pressed: string) => {
+        const focused = ["Saved Playlists", "Available Apps", "Selection Menu"].find(option => container.isOptionFocused(option));
+        const action = focused && transitions[focused]?.[pressed];
+        if (action) action();
         container.redraw();
         container.serve();
     });
