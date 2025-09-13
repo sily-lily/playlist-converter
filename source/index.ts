@@ -1,4 +1,4 @@
-import { fetchCacheData, fetchProjectVersion, fetchSettingsData } from "./modules/information";
+import { fetchCacheData, fetchSettingsData } from "./modules/information";
 import { Container } from "./classes/Container";
 import { Color3 } from "./modules/RGB";
 import { makeInputs } from "./classes/InputManager";
@@ -13,7 +13,7 @@ container.write(`Lily's Playlist Converter (No menu selected)`, 5, 1, Color3.fro
 // Saved Playlists Option
 
 export function listPlaylists() {
-    if (!container.isOptionFocused("Saved Playlists Option")) return;
+    if (!container.isOptionFocused("Saved Playlists")) return;
     if (fetchCacheData().savedPlaylists.length !== 0) {
         for (const app of fetchCacheData().savedPlaylists) {
             container.newSelectionMenuItem(app, false);
@@ -28,7 +28,7 @@ container.write(`Your Saved Playlists (${fetchCacheData().savedPlaylists.length}
 // Apps Option
 
 export function listApps() {
-    if (!container.isOptionFocused("Available Apps Option")) return;
+    if (!container.isOptionFocused("Available Apps")) return;
     if (fetchCacheData().musicApps.length !== 0) {
         for (const app of fetchCacheData().musicApps) {
             container.newSelectionMenuItem(app, false);

@@ -1,7 +1,6 @@
 import { fetchCacheData, fetchSettingsData } from "../modules/information";
 import { Color3 } from "../modules/RGB";
 import process from "node:process";
-import fs from "node:fs";
 
 type drawable = {
     type: "frame" | "text",
@@ -36,13 +35,12 @@ export class Container {
     grid: string[][];
     objects: Map<string, drawable> = new Map();
     focusedOption: string;
-    menuItems: [string, number][];
+    menuItems: Map<string, [string, number]> = new Map();
     cache: any[];
 
     constructor(width: number = 70, height: number = 21) {
         this.focusedOption = "";
         this.cache = [];
-        this.menuItems = [];
         this.maxPage = 0;
         this.width = width;
         this.height = height;
@@ -126,8 +124,15 @@ export class Container {
         this.redraw();
     }
 
-    delete(name: string) {
-        this.objects.delete(name);
+    delete(name: string, list: Map<string, any>) {
+        switch (list) {
+            case this.menuItems:
+                this.menuItems.delete(name);
+                return;
+            case this.objects:
+                this.objects.delete(name);
+                return;
+        }
         this.redraw();
     }
 
@@ -149,7 +154,7 @@ export class Container {
                         const row = line + 2;
                         const usableWidth = this.width - 2;
                         const start = Math.floor((usableWidth - text.length) / 2) + 1;
-                        this.write(" " + text, start, row, color, `Default Message ${row}`, true, true);
+                        this.write(" " + text, start, row, color, `Default Message (${line})`, true, true);
                     }
 
                     // App information
@@ -202,26 +207,15 @@ export class Container {
     }
 
     serve() {
-        let output = '';
-        let lastCol = -1;
-
+        var output = "";
         for (var r = 0; r <= this.height; r++) {
-            let rowOutput = '';
             for (var c = 0; c <= this.width; c++) {
                 const newChar = (this.grid as any[])[r][c];
                 if (newChar !== (this.oldGrid[r]?.[c] ?? " ")) {
-                    if (c === lastCol + 1) {
-                    output += newChar || " ";
-                    } else {
                     output += `\x1b[${r + 1};${c + 1}H${newChar}`;
-                    }
-                    lastCol = c;
                 }
             }
-
-            output += rowOutput;
         }
-
         process.stdout.write(output);
         this.oldGrid = this.grid.map(row => [...row]);
     }
@@ -229,7 +223,7 @@ export class Container {
     // Object focusing
 
     isOptionFocused(name: string): boolean {
-        return this.focusedOption.toLowerCase() === name.toLowerCase();
+        return this.focusedOption.toLowerCase().replace(" Option", "").includes(name.toLowerCase().replace(" Option", ""));
     }
 
     focusObject(name: string, isFocused: boolean) {
@@ -237,7 +231,7 @@ export class Container {
         var base = "Lily's Playlist Converter";
         if (isFocused) {
             this.focusedOption = name;
-        } else if (this.focusedOption.toLowerCase() === lowerName) {
+        } else if (this.focusedOption.toLowerCase().includes(lowerName)) {
             this.focusedOption = "";
         }
 
@@ -246,8 +240,6 @@ export class Container {
             updateText = isFocused ? `Your Saved Playlists (${fetchCacheData().savedPlaylists.length})` : "Unfocused - Your Saved Pla...";
         } else if (lowerName === "available apps") {
             updateText = isFocused ? `Available Apps (${fetchCacheData().musicApps.length})` : "Unfocused - Available Apps...";
-        } if (lowerName === "selection menu") {
-            base = isFocused ? `Unfocused - ${base}` : `Unfocused - ${base}`;
         }
 
         this.update(`${name} Option`, {
@@ -280,17 +272,19 @@ export class Container {
 
     newSelectionMenuItem(name: string = `Unknown Object ${this.fetchSelectionMenuIndex()} - Selection Menu`, isFocused: boolean) {
         var pageNumber = 1;
-        if (this.menuItems.length !== 0) {
-            this.menuItems.forEach((value: [string, number], index: number) => {
-                pageNumber = Math.floor(index / 5) + 1;
-                this.menuItems[index] = [value[0], pageNumber];
+        if (this.menuItems.size !== 0) {
+            let index = 0;
+            this.menuItems.forEach((value, key) => {
+                const pageNumber = Math.floor(index / 5) + 1;
+                this.menuItems.set(key, [value[0], pageNumber]);
+                index++;
             });
-            this.maxPage = Math.ceil(this.menuItems.length / 4);
+            this.maxPage = Math.ceil(this.menuItems.size / 4);
         }
 
         this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
         this.write(name.replace(" - Selection Menu", ""), 6, this.fetchSelectionMenuIndex() * 3, Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused), `${name} - Selection Title`, isFocused);
-        this.menuItems.push([name, pageNumber]);
+        this.menuItems.set(name, [name, pageNumber]);
     }
 
     selectPage(page: number) {
@@ -299,10 +293,10 @@ export class Container {
             this.selectPage(1);
         } else {
             this.update("Selection Menu Title", { text: `Lily's Playlist Converter (Page ${page} of ${this.maxPage})` });
-            for (const item of this.menuItems) {
-                if (item[1] === page && !this.cache.includes(item[0])) {
-                    this.cache.push(item[0]);
-                    this.newSelectionMenuItem(item[0], false);
+            for (const [_, [name, pageNumber]] of this.menuItems) {
+                if (pageNumber === page && !this.cache.includes(name)) {
+                    this.cache.push(name);
+                    this.newSelectionMenuItem(name, false);
                 }
             }
         }
@@ -311,10 +305,11 @@ export class Container {
     clearSelectionMenu() {
         for (const object of this.objects) {
             if (object[0].toLowerCase().includes("- selection menu")) {
-                this.delete(object[0]);
+                this.delete(object[0], this.objects);
             } else if (object[0].toLowerCase().includes("- selection title")) {
-                this.delete(object[0]);
+                this.delete(object[0], this.objects);
             }
         }
+        this.cache = [];
     }
 }

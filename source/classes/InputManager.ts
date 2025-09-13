@@ -1,5 +1,4 @@
 import { listApps, listPlaylists } from "..";
-import { wait } from "../modules/miscellaneous";
 import { Container } from "./Container";
 
 class InputManager {
@@ -37,9 +36,10 @@ export function makeInputs(container: Container) {
     inputManager.init((pressed: string) => {
         if (container.isOptionFocused("Saved Playlists")) {
             if (pressed === "right") {
+                container.clearSelectionMenu();
                 container.focusObject("Saved Playlists", false);
-                container.focusObject("Available Apps", true);
                 container.focusObject("Selection Menu", false);
+                container.focusObject("Available Apps", true);
                 listApps();
             } else if (pressed === "up") {
                 container.focusObject("Saved Playlists", false);
@@ -48,6 +48,7 @@ export function makeInputs(container: Container) {
             }
         } else if (container.isOptionFocused("Available Apps")) {
             if (pressed === "left") {
+                container.clearSelectionMenu();
                 container.focusObject("Available Apps", false);
                 container.focusObject("Selection Menu", false);
                 container.focusObject("Saved Playlists", true);
@@ -61,8 +62,8 @@ export function makeInputs(container: Container) {
             if (pressed === "escape") {
                 container.clearSelectionMenu();
                 container.focusObject("Selection Menu", false);
-                container.focusObject("Saved Playlists", true);
                 container.focusObject("Available Apps", false);
+                container.focusObject("Saved Playlists", true);
             }
         }
 
