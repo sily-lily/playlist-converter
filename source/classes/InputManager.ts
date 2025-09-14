@@ -60,7 +60,21 @@ export function makeInputs(container: Container) {
             escape: () => {
                 container.clearSelectionMenu();
                 setFocus("Saved Playlists");
-            }
+            },
+
+            // Item Navigation
+
+            up: () => {
+
+            },
+            down: () => {
+
+            },
+
+            // Page Navigation
+
+            left: () => container.selectPage(container.selectedPage - 1),
+            right: () => container.selectPage(container.selectedPage + 1)
         }
     };
 

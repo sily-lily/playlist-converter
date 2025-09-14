@@ -37,9 +37,11 @@ export class Container {
     focusedOption: string;
     menuItems: Map<string, [string, number]> = new Map();
     cache: any[];
+    selectedPage: number;
 
     constructor(width: number = 70, height: number = 21) {
         this.focusedOption = "";
+        this.selectedPage = 1;
         this.cache = [];
         this.maxPage = 0;
         this.width = width;
@@ -288,16 +290,15 @@ export class Container {
     }
 
     selectPage(page: number) {
+        if (this.fetchSelectionMenuIndex() === 0) return;
         if (this.fetchSelectionMenuIndex() !== 0) this.clearSelectionMenu();
-        if (page > this.maxPage || page < 1) {
-            this.selectPage(1);
-        } else {
-            this.update("Selection Menu Title", { text: `Lily's Playlist Converter (Page ${page} of ${this.maxPage})` });
-            for (const [_, [name, pageNumber]] of this.menuItems) {
-                if (pageNumber === page && !this.cache.includes(name)) {
-                    this.cache.push(name);
-                    this.newSelectionMenuItem(name, false);
-                }
+        if (page > this.maxPage || page < 1) page = 1;
+        this.selectedPage = page;
+        this.update("Selection Menu Title", { text: `Lily's Playlist Converter (Page ${this.selectedPage} of ${this.maxPage})` });
+        for (const [_, [name, pageNumber]] of this.menuItems) {
+            if (pageNumber === this.selectedPage && !this.cache.includes(name)) {
+                this.cache.push(name);
+                this.newSelectionMenuItem(name, false);
             }
         }
     }
