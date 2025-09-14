@@ -1,5 +1,5 @@
 <div align="center">
-  <h5>Yes, I'm aware the default text is a single space off centered, I really don't want to fix it since it's hard to notice if you just.. don't look for it</h5>
+  <h5>Yes, I'm aware the default text is a single space off centered, I really don't want to fix it since it's a little hard to notice</h5>
   <h1>Preview of Version: 1.0.0-alpha</h1>
   <table>
     <tr>
