@@ -1,4 +1,4 @@
-import { fetchCacheData, fetchSettingsData } from "../modules/information";
+import { fetchCacheData, fetchProjectVersion, fetchSettingsData } from "../modules/information";
 import { Color3 } from "../modules/RGB";
 import process from "node:process";
 
@@ -161,23 +161,32 @@ export class Container {
 
                     // App information
 
-                    writeOnLine("⠀⠀⣠⡟⠀⠈⠙⢦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⡶⣦⣀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠾⠋⠁⠀⠈⢽⡄", Color3.fromHex(fetchSettingsData().textColor.focused), 1);
-                    writeOnLine("⠀⠀⡿⠀⠀⠀⠀⠀⠉⠷⣄⣀⣤⠤⠤⠤⠤⢤⣷⡀⠙⢷⡄⠀⠀⠀⠀⣠⠞⠉⠀⠀⠀⠀⠀⠈⡇", Color3.fromHex(fetchSettingsData().textColor.focused), 2);
-                    writeOnLine("⠀⢰⡇⠀⠀⠀⠀⠀⠀⠀⠉⠳⣄⠀⠀⠀⠀⠀⠈⠁⠀⠀⠹⣦⠀⣠⡞⠁⠀⠀⠀⠀⠀⠀⠀⠀⡗", Color3.fromHex(fetchSettingsData().textColor.focused), 3);
-                    writeOnLine("⠀⣾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣻⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣏", Color3.fromHex(fetchSettingsData().textColor.focused), 4);
-                    writeOnLine("⠀⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠂", Color3.fromHex(fetchSettingsData().textColor.focused), 5);
-                    writeOnLine("⠀⢿⠀⠀⠀⠀⣤⣤⣤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣤⣤⣤⣤⡀⠀⠀⠀⠀⠀⣸⠇⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 6);
-                    writeOnLine("⠀⠘⣇⠀⠀⠀⠀⠉⠉⠛⠛⢿⣶⣦⠀⠀⠀⠀⠀⠀⢴⣾⣟⣛⡋⠋⠉⠉⠁⠀⠀⠀⠀⣴⠏⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 7);
-                    writeOnLine("⢀⣀⠙⢷⡄⠀⠀⣀⣤⣶⣾⠿⠋⠁⠀⢴⠶⠶⠄⠀⠀⠉⠙⠻⠿⣿⣷⣶⡄⠀⠀⡴⠾⠛⠛⣹⠇", Color3.fromHex(fetchSettingsData().textColor.focused), 8);
-                    writeOnLine("⢸⡍⠉⠉⠉⠀⠀⠈⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⣬⠷⣆⣠⡤⠄⢀⣤⠞⠁⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 9);
-                    writeOnLine("⠈⠻⣆⡀⠶⢻⣇⡴⠖⠀⠀⠀⣴⡀⣀⡴⠚⠳⠦⣤⣤⠾⠀⠀⠀⠀⠀⠘⠟⠋⠀⠀⠀⢻⣄⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 10);
-                    writeOnLine("⠀⢠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡀⠀⠀⢀⡇⠀⠀⠀⠀⠀⠀⠀⠀⣀⡿⠧⠿⠿⠟⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 11);
-                    writeOnLine("⠀⣾⡴⠖⠛⠳⢦⣿⣶⣄⣀⠀⠀⠀⠀⠘⢷⣀⠀⣸⠃⠀⠀⠀⣀⣀⣤⠶⠚⠉⠀⠀⠀⠀⠀⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 12);
-                    writeOnLine("⠀⠀⠀⠀⠀⠀⠀⠈⢷⡀⠈⠻⠦⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠀⠹⣆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 13);
-                    writeOnLine("⠀⠀⠀⠀⠀⠀⠀⢀⡴⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢳⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 14);
+                    // writeOnLine("⠀⠀⣠⡟⠀⠈⠙⢦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⡶⣦⣀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠾⠋⠁⠀⠈⢽⡄", Color3.fromHex(fetchSettingsData().textColor.focused), 1);
+                    // writeOnLine("⠀⠀⡿⠀⠀⠀⠀⠀⠉⠷⣄⣀⣤⠤⠤⠤⠤⢤⣷⡀⠙⢷⡄⠀⠀⠀⠀⣠⠞⠉⠀⠀⠀⠀⠀⠈⡇", Color3.fromHex(fetchSettingsData().textColor.focused), 2);
+                    // writeOnLine("⠀⢰⡇⠀⠀⠀⠀⠀⠀⠀⠉⠳⣄⠀⠀⠀⠀⠀⠈⠁⠀⠀⠹⣦⠀⣠⡞⠁⠀⠀⠀⠀⠀⠀⠀⠀⡗", Color3.fromHex(fetchSettingsData().textColor.focused), 3);
+                    // writeOnLine("⠀⣾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣻⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣏", Color3.fromHex(fetchSettingsData().textColor.focused), 4);
+                    // writeOnLine("⠀⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠂", Color3.fromHex(fetchSettingsData().textColor.focused), 5);
+                    // writeOnLine("⠀⢿⠀⠀⠀⠀⣤⣤⣤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣤⣤⣤⣤⡀⠀⠀⠀⠀⠀⣸⠇⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 6);
+                    // writeOnLine("⠀⠘⣇⠀⠀⠀⠀⠉⠉⠛⠛⢿⣶⣦⠀⠀⠀⠀⠀⠀⢴⣾⣟⣛⡋⠋⠉⠉⠁⠀⠀⠀⠀⣴⠏⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 7);
+                    // writeOnLine("⢀⣀⠙⢷⡄⠀⠀⣀⣤⣶⣾⠿⠋⠁⠀⢴⠶⠶⠄⠀⠀⠉⠙⠻⠿⣿⣷⣶⡄⠀⠀⡴⠾⠛⠛⣹⠇", Color3.fromHex(fetchSettingsData().textColor.focused), 8);
+                    // writeOnLine("⢸⡍⠉⠉⠉⠀⠀⠈⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⣬⠷⣆⣠⡤⠄⢀⣤⠞⠁⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 9);
+                    // writeOnLine("⠈⠻⣆⡀⠶⢻⣇⡴⠖⠀⠀⠀⣴⡀⣀⡴⠚⠳⠦⣤⣤⠾⠀⠀⠀⠀⠀⠘⠟⠋⠀⠀⠀⢻⣄⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 10);
+                    // writeOnLine("⠀⢠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡀⠀⠀⢀⡇⠀⠀⠀⠀⠀⠀⠀⠀⣀⡿⠧⠿⠿⠟⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 11);
+                    // writeOnLine("⠀⣾⡴⠖⠛⠳⢦⣿⣶⣄⣀⠀⠀⠀⠀⠘⢷⣀⠀⣸⠃⠀⠀⠀⣀⣀⣤⠶⠚⠉⠀⠀⠀⠀⠀⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 12);
+                    // writeOnLine("⠀⠀⠀⠀⠀⠀⠀⠈⢷⡀⠈⠻⠦⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠀⠹⣆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 13);
+                    // writeOnLine("⠀⠀⠀⠀⠀⠀⠀⢀⡴⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢳⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀", Color3.fromHex(fetchSettingsData().textColor.focused), 14);
                     
-                    // writeOnLine(`Running on version: ${fetchProjectVersion()}`, Color3.fromHex(fetchSettingsData().textColor.unfocused), 12);
-                    // writeOnLine("github.com/sily-lily ~ lily.transgirls.win", Color3.fromHex("#5BCEFA"), 13);
+                    writeOnLine("Focus on the commandline using the keybind :          ", Color3.fromHex(fetchSettingsData().textColor.focused), 1);
+                    writeOnLine("Get detailed help using :help -d and commands using -c", Color3.fromHex(fetchSettingsData().textColor.focused), 2);
+
+                    writeOnLine("~~~~~", Color3.fromHex(fetchSettingsData().textColor.unfocused), 5);
+                    writeOnLine("Use the arrow keys to navigate this menu        ", Color3.fromHex(fetchSettingsData().textColor.focused), 6);
+                    writeOnLine("Use escape to clear and leave the Selection Menu", Color3.fromHex(fetchSettingsData().textColor.focused), 7);
+                    writeOnLine("Use enter to press buttons or submit text fields", Color3.fromHex(fetchSettingsData().textColor.focused), 8);
+                    writeOnLine("~~~~~", Color3.fromHex(fetchSettingsData().textColor.unfocused), 9);
+
+                    writeOnLine(`Running on version: ${fetchProjectVersion()}                      `, Color3.fromHex(fetchSettingsData().textColor.unfocused), 12);
+                    writeOnLine("github.com/sily-lily ~ lily.transgirls.win            ", Color3.fromHex("#5BCEFA"), 13);
                 } else {
                     for (let index = 0; index <= 14; index++) {
                         this.objects.delete(`Default Message (${index})`);
@@ -281,7 +290,7 @@ export class Container {
                 this.menuItems.set(key, [value[0], pageNumber]);
                 index++;
             });
-            this.maxPage = Math.ceil(this.menuItems.size / 4);
+            this.maxPage = Math.ceil(this.menuItems.size / 5);
         }
 
         this.new(62, 2, Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused), 4, 4 + this.fetchSelectionMenuIndex() * 6, !name.toLowerCase().includes("- selection menu") ? name + " - Selection Menu" : name, isFocused);
@@ -312,5 +321,6 @@ export class Container {
             }
         }
         this.cache = [];
+        this.menuItems.clear();
     }
 }

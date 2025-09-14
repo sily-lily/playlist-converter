@@ -1,5 +1,11 @@
 {
-    "savedPlaylists": [],
+    "savedPlaylists": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+    ],
     "musicApps": [
         "Apple Music",
         "Spotify",
