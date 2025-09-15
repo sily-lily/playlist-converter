@@ -5,6 +5,11 @@ import { makeBinds } from "./classes/InputManager";
 
 const main = new Container(70, 21);
 
+function clean() {
+    main.pageItems.clear();
+    main.cache = [];
+}
+
 // Main Container
 
 main.makeFrame("Selection Menu Option", 66, 16, 2, 2, Color3.fromHex(fetchSettingsData().lineColor.unfocused), false);
@@ -15,6 +20,7 @@ main.makeLabel("Selection Menu Title", `Lily's Playlist Conversion Tool (No menu
 export function listPlaylists() {
     if (!main.isObjectFocused("Saved Playlists")) return;
     if (fetchCacheData().savedPlaylists.length !== 0) {
+        clean();
         for (const app of fetchCacheData().savedPlaylists) {
             main.makeSelectionItem(app, false);
         }
@@ -31,6 +37,7 @@ main.makeLabel("Saved Playlists Title", `Your Saved Playlists (${fetchCacheData(
 export function listApps() {
     if (!main.isObjectFocused("Available Apps")) return;
     if (fetchCacheData().musicApps.length !== 0) {
+        clean();
         for (const app of fetchCacheData().musicApps) {
             main.makeSelectionItem(app, false);
         }

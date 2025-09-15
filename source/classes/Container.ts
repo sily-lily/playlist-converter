@@ -247,8 +247,10 @@ export class Container {
             this.pageItems.forEach((value: [string, number], key: string) => {
                 const page = Math.floor(index / 5) + 1;
                 this.pageItems.set(key, [value[0], page]);
-                this.highestPage = Math.ceil(this.pageItems.size / 5);
+                index++;
             });
+
+            this.highestPage = Math.ceil(this.pageItems.size / 5);
         }
 
         this.makeFrame(
@@ -273,7 +275,10 @@ export class Container {
         page: number
     ) {
         if (this.fetchSelectionMenuIndex() === 0) return;
-        if (this.fetchSelectionMenuIndex() !== 0) this.clearSelectionMenu();
+        if (this.fetchSelectionMenuIndex() !== 0) {
+            this.clearSelectionMenu();
+            // this.pageItems.clear();
+        }
         if (page > this.highestPage || page < 1) page = 1;
         
         this.focusedPage = page;
@@ -296,5 +301,7 @@ export class Container {
                 this.remove(object[0], this.objects);
             }
         }
+
+        this.rescribble();
     }
 }
