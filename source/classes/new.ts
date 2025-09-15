@@ -31,7 +31,7 @@ export class Container {
     focusedObject: string;
 
     constructor(
-        frameWidth: number = 70, frameHeight: number = 21
+        frameWidth: number = 70, frameHeight: number = 22
     ) {
         this.pageItems = new Map();
         this.highestPage = 0;
@@ -53,9 +53,36 @@ export class Container {
 
     // Drawing stuff
 
+    private scribble(
+        beginningRow: number, beginningColumn: number,
+        objectWidth: number, objectHeight: number,
+        lineColor: Color3
+    ) {
+        const highestRow = beginningRow + objectHeight;
+        const highestColumn = beginningColumn + objectWidth;
+        for (let row = beginningRow; row <= highestRow; row++) {
+            if (!this.grid[row]) this.grid[row] = [];
+            if (this.grid[row]!.length <= highestColumn) {
+                const leftoverSpace = highestColumn - this.grid[row]!.length + 1;
+                this.grid[row] = this.grid[row]!.concat(Array(leftoverSpace).fill(" "));
+            }
+
+            for (let column = beginningColumn; column <= highestColumn; column++) {
+                let frame = " ";
+                     if (row    === beginningRow    && column === beginningColumn) frame = this.sides.topLeft;
+                else if (row    === beginningRow    && column === highestColumn)   frame = this.sides.topRight;
+                else if (row    === highestRow      && column === beginningColumn) frame = this.sides.bottomLeft;
+                else if (row    === highestRow      && column === highestColumn)   frame = this.sides.bottomRight;
+                else if (row    === beginningRow    || row    === highestRow)      frame = this.sides.horizontal;
+                else if (column === beginningColumn || column === highestColumn)   frame = this.sides.vertical;
+                this.grid[row]![column] = lineColor.toAnsi(frame);
+            }
+        }
+    }
+
     makeFrame(
         name: string,
-        frameWidth: number = 70, frameHeight: number = 21,
+        frameWidth: number = 70, frameHeight: number = 22,
         X: number = 0, Y: number = 0,
         lineColor: Color3,
         isFocused: boolean,
@@ -68,7 +95,7 @@ export class Container {
             frameWidth, frameHeight,
             lineColor,
             isFocused
-        }); 
+        });
         if (!avoidDrawing) this.rescribble();
     }
 
@@ -148,8 +175,6 @@ export class Container {
                 }
             }
         }
-
-        this.grid = newGrid;
     }
 
     private drawOnGrid(

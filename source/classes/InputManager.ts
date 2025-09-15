@@ -3,80 +3,92 @@ import { listApps, listPlaylists } from "..";
 import { Container } from "./Container";
 
 class InputManager {
-    constructor(public debug = false) {
+    constructor() {
         readline.emitKeypressEvents(process.stdin);
-        if (process.stdin.isTTY) process.stdin.setRawMode(true);
+
+        process.stdin.setRawMode(true);
         process.stdin.setEncoding("utf8");
-        if (process.stdin.isTTY) process.stdin.resume();
+        process.stdin.resume();
         process.stdout.write("\x1b[?25l");
     }
 
-    init(callback?: (pressed: string) => any) {
-        const onKeypress = (str: string, key: any) => {
+    init(
+        callback?: (pressed: string) => any
+    ) {
+        const onPress = (__string: string, key: any) => {
+            let action: string | null = null;
             if (!key) return;
             if (key.sequence === "\u0003") process.exit();
-            let action: string | null = null;
-            if (key.name === "up") action = "up";
+                 
+                 if (key.name === "up") action = "up";
             else if (key.name === "down") action = "down";
             else if (key.name === "left") action = "left";
             else if (key.name === "right") action = "right";
             else if (key.name === "escape") action = "escape";
             else if (key.name === "return" || key.name === "enter" || key.sequence === "\r" || key.sequence === "\n") action = "enter";
             else if (key.name === "space" || key.sequence === " ") action = "enter";
-            if (this.debug) console.log({ str, name: key.name, seq: key.sequence, action });
+        
             if (action && callback) callback(action);
         };
-        (process.stdin as any).on("keypress", onKeypress);
+
+        process.stdin.on("keypress", onPress);
     }
 }
 
-export function makeInputs(container: Container) {
-    const inputManager = new InputManager(false);
-    const options = ["Saved Playlists", "Available Apps", "Selection Menu"];
-    const setFocus = (...names: string[]) => {
-        options.forEach(o => container.focusObject(o, names.includes(o)));
-    };
+export function makeBinds(
+    main: Container
+) {
+    const manager = new InputManager();
+    const choices = [
+        "Saved Playlists",
+        "Available Apps",
+        "Selection Menu"
+    ];
 
-    container.redraw();
-    container.serve();
+    const changeFocus = (...names: string[]) => {
+        choices.forEach(choice => main.focusObject(choice, names.includes(choice)));
+    }
+
+    main.rescribble();
+    main.serve();
+    
     const transitions: Record<string, Record<string, () => void>> = {
         "Saved Playlists": {
-            right: () => setFocus("Available Apps"),
-            up: () => setFocus("Selection Menu"),
+            right: () => changeFocus("Available Apps"),
+            up:    () => changeFocus("Selection Menu"),
             enter: () => {
                 listPlaylists();
-                setFocus("Selection Menu");
+                changeFocus("Selection Menu");
             }
         },
         "Available Apps": {
-            left: () => setFocus("Saved Playlists"),
-            up: () => setFocus("Selection Menu"),
+            left:  () => changeFocus("Saved Playlists"),
+            up:    () => changeFocus("Selection Menu"),
             enter: () => {
                 listApps();
-                setFocus("Selection Menu");
+                changeFocus("Selection Menu");
             }
         },
         "Selection Menu": {
             escape: () => {
-                container.clearSelectionMenu();
-                setFocus("Saved Playlists");
+                main.clearSelectionMenu();
+                changeFocus("Saved Playlists");
             },
-            up: () => {
-
+            up:     () => {},
+            down:   () => {
+                if (main.fetchSelectionMenuIndex() === 0) changeFocus("Saved Playlists");
             },
-            down: () => {
-                if (container.fetchSelectionMenuIndex() === 0) setFocus("Saved Playlists");
-            },
-            left: () => container.selectPage(container.selectedPage - 1),
-            right: () => container.selectPage(container.selectedPage + 1)
+            left:   () => main.choosePage(main.focusedPage - 1),
+            right:  () => main.choosePage(main.focusedPage + 1)
         }
-    };
+    }
 
-    inputManager.init((pressed: string) => {
-        const focused = options.find(opt => container.isOptionFocused(opt));
+    manager.init((pressed: string) => {
+        const focused = choices.find(choice => main.isObjectFocused(choice));
         const action = focused && transitions[focused]?.[pressed];
         if (action) action();
-        container.redraw();
-        container.serve();
+
+        main.rescribble();
+        main.serve();
     });
 }

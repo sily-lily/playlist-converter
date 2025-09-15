@@ -1,55 +1,57 @@
 import { fetchCacheData, fetchSettingsData } from "./modules/information";
 import { Container } from "./classes/Container";
 import { Color3 } from "./modules/RGB";
-import { makeInputs } from "./classes/InputManager";
+import { makeBinds } from "./classes/InputManager";
 
-const container = new Container(70, 21);
+const main = new Container(70, 21);
 
 // Main Container
 
-container.new(66, 16, Color3.fromHex(fetchSettingsData().lineColor.unfocused), 2, 2, "Selection Menu Option", false);
-container.write(`Lily's Playlist Converter (No menu selected)`, 5, 1, Color3.fromHex(fetchSettingsData().textColor.unfocused), "Selection Menu Title", false)
+main.makeFrame("Selection Menu Option", 66, 16, 2, 2, Color3.fromHex(fetchSettingsData().lineColor.unfocused), false);
+main.makeLabel("Selection Menu Title", `Lily's Playlist Conversion Tool (No menu selected)`, 5, 1, Color3.fromHex(fetchSettingsData().textColor.unfocused), false);
 
 // Saved Playlists Option
 
 export function listPlaylists() {
-    if (!container.isOptionFocused("Saved Playlists")) return;
+    if (!main.isObjectFocused("Saved Playlists")) return;
     if (fetchCacheData().savedPlaylists.length !== 0) {
         for (const app of fetchCacheData().savedPlaylists) {
-            container.newSelectionMenuItem(app, false);
+            main.makeSelectionItem(app, false);
         }
-        container.selectPage(1);
+
+        main.choosePage(1);
     }
 }
 
-container.new(32, 2, Color3.fromHex(fetchSettingsData().lineColor.unfocused), 2, 36, "Saved Playlists Option", false);
-container.write(`Your Saved Playlists (${fetchCacheData().savedPlaylists.length})`, 4, 19, Color3.fromHex(fetchSettingsData().textColor.unfocused), "Saved Playlists Title", false);
+main.makeFrame("Saved Playlists Option", 32, 2, 2, 36, Color3.fromHex(fetchSettingsData().lineColor.unfocused), false);
+main.makeLabel("Saved Playlists Title", `Your Saved Playlists (${fetchCacheData().savedPlaylists.length})`, 4, 19, Color3.fromHex(fetchSettingsData().textColor.unfocused), false);
 
 // Apps Option
 
 export function listApps() {
-    if (!container.isOptionFocused("Available Apps")) return;
+    if (!main.isObjectFocused("Available Apps")) return;
     if (fetchCacheData().musicApps.length !== 0) {
         for (const app of fetchCacheData().musicApps) {
-            container.newSelectionMenuItem(app, false);
+            main.makeSelectionItem(app, false);
         }
-        container.selectPage(1);
+
+        main.choosePage(1);
     }
 }
 
-container.new(32, 2, Color3.fromHex(fetchSettingsData().lineColor.unfocused), 36, 36, "Available Apps Option", false);
-container.write(`Available Apps (${fetchCacheData().musicApps.length})`, 38, 19, Color3.fromHex(fetchSettingsData().textColor.unfocused), "Available Apps Title", false);
+main.makeFrame("Available Apps Option", 32, 2, 36, 36, Color3.fromHex(fetchSettingsData().lineColor.unfocused), false);
+main.makeLabel("Available Apps Title", `Available Apps (${fetchCacheData().savedPlaylists.length})`, 38, 19, Color3.fromHex(fetchSettingsData().textColor.unfocused), false);
 
 // Pre-requisites
 
-container.focusObject("Selection Menu", true);
-container.focusObject("Available Apps", false);
-container.focusObject("Saved Playlists", false);
+main.focusObject("Selection Menu", true);
+main.focusObject("Available Apps", false);
+main.focusObject("Saved Playlists", false);
 
 listPlaylists();
 listApps();
-makeInputs(container);
+makeBinds(main);
 
 // Launch the Program :3
 
-container.serve();
+main.serve();
