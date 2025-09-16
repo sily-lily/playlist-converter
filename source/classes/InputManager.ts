@@ -81,12 +81,12 @@ export function makeBinds(
                 main.clearSelectionMenu();
                 changeFocus("Saved Playlists");
             },
-            up:     () => main.focusObject(main.fetchSelectionItemFromIndex(main.focusedSelectionItemIndex + 1), true, true),
+            up:     () => main.focusObject(main.fetchSelectionItemFromIndex(main.focusedSelectionItemIndex - 1), true, true),
             down:   () => {
                 if (main.fetchSelectionMenuIndex() === 0) {
                     changeFocus("Saved Playlists");
                 } else {
-                    main.focusObject(main.fetchSelectionItemFromIndex(main.focusedSelectionItemIndex - 1), true, true)
+                    main.focusObject(main.fetchSelectionItemFromIndex(main.focusedSelectionItemIndex + 1), true, true)
                 }
             },
             left:   () => main.choosePage(main.focusedPage - 1),

@@ -223,7 +223,7 @@ export class Container {
             isFocused
         });
 
-        this.modify(!isSelectionItem ? `${name} Title` : `${name} - Selection Title`, {
+        this.modify(!isSelectionItem ? `${name} Title` : `${name} Title - Selection Title`, {
             text: titleText, textColor: Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused),
             isFocused
         });
@@ -286,10 +286,9 @@ export class Container {
         let object = "";
         let index = 1;
         for (const [_, [item]] of this.pageItems) {
-            const base = item.toLowerCase().replace(" - selection menu", "").replace(" - selection title", "");
             if (index === desiredIndex) {
-                object = base;
-                this.modify("Saved Playlists Title", {text:`${this.pageItems.size}|${index}|${base}`})
+                object = item;
+                this.modify("Saved Playlists Title", {text:`${this.pageItems.size}|${index}|${item.replace(" - selection menu", "")}|${item.replace(" - selection title", "")}`})
                 break;
             }
 
@@ -304,7 +303,11 @@ export class Container {
     ) {
         if (this.fetchSelectionMenuIndex() === 0) return;
         if (this.fetchSelectionMenuIndex() !== 0) this.clearSelectionMenu();
-        if (page > this.highestPage || page < 1) page = 1;
+        if (page > this.highestPage || page < 1) {
+            page = 1;
+            this.focusedSelectionItemIndex = 1;
+            this.focusObject(this.fetchSelectionItemFromIndex(this.focusedSelectionItemIndex), true, true);
+        }
         
         this.focusedPage = page;
         this.modify("Selection Menu Title", {
