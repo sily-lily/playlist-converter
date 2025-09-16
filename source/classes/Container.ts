@@ -283,12 +283,13 @@ export class Container {
     fetchSelectionItemFromIndex(
         desiredIndex: number
     ): string {
+        this.focusedSelectionItemIndex = desiredIndex;
         let object = "";
         let index = 1;
         for (const [_, [item]] of this.pageItems) {
-            if (index === desiredIndex) {
+            if (this.focusedSelectionItemIndex > this.pageItems.size || this.focusedSelectionItemIndex < 1) this.focusedSelectionItemIndex = 1;
+            if (index === this.focusedSelectionItemIndex) {
                 object = item;
-                this.focusedSelectionItemIndex = index;
                 break;
             }
 
@@ -298,19 +299,27 @@ export class Container {
         return object;
     }
 
+    fetchIndexFromSelectionItem(
+        name: string
+    ): number {
+        let index = 1;
+        for (const [_, [item]] of this.pageItems) {
+            if (item === name) break;
+            index++;
+        }
+
+        return index;
+    }
+
     focusSelectionItem(
         name: string
     ) {
-        let index = 1;
-        for (const [_, [item]] of this.pageItems) {
-            if (this.isObjectFocused(this.fetchSelectionItemFromIndex(index)) !== this.isObjectFocused(name)) {
-                this.focusObject(item, false, true);
-            } else {
-                this.focusObject(item, true, true);
-            }
-
-            index++;
+        for (let index = 0; index <= this.pageItems.size; index++) {
+            this.focusObject(this.fetchSelectionItemFromIndex(index), false, true);
         }
+
+        this.focusObject(name, true, true);
+        this.focusedSelectionItemIndex = this.fetchIndexFromSelectionItem(name);
     }
 
     choosePage(
@@ -321,7 +330,6 @@ export class Container {
         if (page > this.highestPage || page < 1) {
             page = 1;
             this.focusedSelectionItemIndex = 0;
-            this.focusObject(this.fetchSelectionItemFromIndex(this.focusedSelectionItemIndex), true, true);
         }
         
         this.focusedPage = page;
