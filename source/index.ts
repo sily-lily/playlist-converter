@@ -51,9 +51,9 @@ main.makeLabel("Available Apps Title", `Available Apps (${fetchCacheData().saved
 
 // Pre-requisites
 
-main.focusObject("Selection Menu", true);
-main.focusObject("Available Apps", false);
-main.focusObject("Saved Playlists", false);
+main.focusObject("Selection Menu", true, false);
+main.focusObject("Available Apps", false, false);
+main.focusObject("Saved Playlists", false, false);
 
 listPlaylists();
 listApps();

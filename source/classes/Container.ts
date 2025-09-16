@@ -1,3 +1,4 @@
+import { toNamespacedPath } from "node:path";
 import { fetchCacheData, fetchProjectVersion, fetchSettingsData } from "../modules/information";
 import { Color3 } from "../modules/RGB";
 import { drawable } from "../types";
@@ -20,6 +21,8 @@ export class Container {
     pageItems: Map<string, [string, number]>;
     highestPage: number;
     focusedPage: number;
+    focusedSelectionItem: string;
+    focusedSelectionItemIndex: number;
 
     frameWidth: number;
     frameHeight: number;
@@ -36,6 +39,8 @@ export class Container {
         this.pageItems = new Map();
         this.highestPage = 0;
         this.focusedPage = 1;
+        this.focusedSelectionItem = "";
+        this.focusedSelectionItemIndex = 1;
 
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
@@ -201,21 +206,24 @@ export class Container {
 
     focusObject(
         name: string,
-        isFocused: boolean
+        isFocused: boolean,
+        isSelectionItem: boolean
     ) {
         const base = "Lily's Playlist Conversion Tool";
-             if (isFocused) this.focusedObject = name;
-        else if (this.focusedObject.toLowerCase().includes(name.toLowerCase())) this.focusedObject = "";
+             if (isFocused && !isSelectionItem) this.focusedObject = name;
+        else if (this.focusedObject.toLowerCase().includes(name.toLowerCase()) && !isSelectionItem) this.focusedObject = "";
         let titleText = "";
              if (name.toLowerCase() === "saved playlists") titleText = isFocused ? `Your Saved Playlists (${fetchCacheData().savedPlaylists.length})` : "Unfocused - Your Saved Pla...";
         else if (name.toLowerCase() === "available apps")  titleText = isFocused ? `Available Apps (${fetchCacheData().musicApps.length})`            : "Unfocused - Available Apps...";
-        
-        this.modify(`${name} Option`, {
+             if (isFocused && isSelectionItem) this.focusedSelectionItem = name;
+        else if (this.focusedSelectionItem.toLowerCase().includes(name.toLowerCase()) && isSelectionItem) this.focusedSelectionItem = "";
+
+        this.modify(!isSelectionItem ? `${name} Option` : `${name} - Selection Menu`, {
             lineColor: Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused),
             isFocused
         });
 
-        this.modify(`${name} Title`, {
+        this.modify(!isSelectionItem ? `${name} Title` : `${name} - Selection Title`, {
             text: titleText, textColor: Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused),
             isFocused
         });
@@ -234,6 +242,7 @@ export class Container {
         for (const object of this.objects) {
             if (object[0].toLowerCase().includes("- selection menu")) index++;
         }
+
         return index;
     }
 
@@ -271,14 +280,30 @@ export class Container {
         this.pageItems.set(name, [name, page]);
     }
 
+    fetchSelectionItemFromIndex(
+        desiredIndex: number
+    ): string {
+        let object = "";
+        let index = 1;
+        for (const [_, [item]] of this.pageItems) {
+            const base = item.toLowerCase().replace(" - selection menu", "").replace(" - selection title", "");
+            if (index === desiredIndex) {
+                object = base;
+                this.modify("Saved Playlists Title", {text:`${this.pageItems.size}|${index}|${base}`})
+                break;
+            }
+
+            index++;
+        }
+        
+        return object;
+    }
+
     choosePage(
         page: number
     ) {
         if (this.fetchSelectionMenuIndex() === 0) return;
-        if (this.fetchSelectionMenuIndex() !== 0) {
-            this.clearSelectionMenu();
-            // this.pageItems.clear();
-        }
+        if (this.fetchSelectionMenuIndex() !== 0) this.clearSelectionMenu();
         if (page > this.highestPage || page < 1) page = 1;
         
         this.focusedPage = page;
@@ -296,6 +321,7 @@ export class Container {
 
     clearSelectionMenu() {
         this.cache = [];
+        this.focusedSelectionItem = "";
         for (const object of this.objects) {
             if (object[0].toLowerCase().includes("- selection menu") || object[0].toLowerCase().includes("- selection title")) {
                 this.remove(object[0], this.objects);
