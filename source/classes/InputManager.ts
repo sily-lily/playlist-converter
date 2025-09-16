@@ -51,7 +51,6 @@ export function makeBinds(
 
     main.rescribble();
     main.serve();
-
     const transitions: Record<string, Record<string, () => void>> = {
         "Saved Playlists": {
             right: () => changeFocus("Available Apps"),
