@@ -40,7 +40,7 @@ export class Container {
         this.highestPage = 0;
         this.focusedPage = 1;
         this.focusedSelectionItem = "";
-        this.focusedSelectionItemIndex = 1;
+        this.focusedSelectionItemIndex = 0;
 
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
@@ -288,7 +288,7 @@ export class Container {
         for (const [_, [item]] of this.pageItems) {
             if (index === desiredIndex) {
                 object = item;
-                this.modify("Saved Playlists Title", {text:`${this.pageItems.size}|${index}|${item.replace(" - selection menu", "")}|${item.replace(" - selection title", "")}`})
+                this.focusedSelectionItemIndex = index;
                 break;
             }
 
@@ -298,6 +298,21 @@ export class Container {
         return object;
     }
 
+    focusSelectionItem(
+        name: string
+    ) {
+        let index = 1;
+        for (const [_, [item]] of this.pageItems) {
+            if (this.isObjectFocused(this.fetchSelectionItemFromIndex(index)) !== this.isObjectFocused(name)) {
+                this.focusObject(item, false, true);
+            } else {
+                this.focusObject(item, true, true);
+            }
+
+            index++;
+        }
+    }
+
     choosePage(
         page: number
     ) {
@@ -305,7 +320,7 @@ export class Container {
         if (this.fetchSelectionMenuIndex() !== 0) this.clearSelectionMenu();
         if (page > this.highestPage || page < 1) {
             page = 1;
-            this.focusedSelectionItemIndex = 1;
+            this.focusedSelectionItemIndex = 0;
             this.focusObject(this.fetchSelectionItemFromIndex(this.focusedSelectionItemIndex), true, true);
         }
         
@@ -325,6 +340,7 @@ export class Container {
     clearSelectionMenu() {
         this.cache = [];
         this.focusedSelectionItem = "";
+        this.focusedSelectionItemIndex = 0;
         for (const object of this.objects) {
             if (object[0].toLowerCase().includes("- selection menu") || object[0].toLowerCase().includes("- selection title")) {
                 this.remove(object[0], this.objects);

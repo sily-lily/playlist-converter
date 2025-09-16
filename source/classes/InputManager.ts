@@ -52,11 +52,6 @@ export function makeBinds(
     main.rescribble();
     main.serve();
 
-    function focusInitialObject() {
-        if (main.fetchSelectionMenuIndex() === 0) return;
-        main.focusObject(main.fetchSelectionItemFromIndex(main.focusedSelectionItemIndex), true, true);
-    }
-    
     const transitions: Record<string, Record<string, () => void>> = {
         "Saved Playlists": {
             right: () => changeFocus("Available Apps"),
@@ -64,7 +59,6 @@ export function makeBinds(
             enter: () => {
                 listPlaylists();
                 changeFocus("Selection Menu");
-                focusInitialObject();
             }
         },
         "Available Apps": {
@@ -73,7 +67,6 @@ export function makeBinds(
             enter: () => {
                 listApps();
                 changeFocus("Selection Menu");
-                focusInitialObject();
             }
         },
         "Selection Menu": {
@@ -81,12 +74,12 @@ export function makeBinds(
                 main.clearSelectionMenu();
                 changeFocus("Saved Playlists");
             },
-            up:     () => main.focusObject(main.fetchSelectionItemFromIndex(main.focusedSelectionItemIndex - 1), true, true),
+            up:     () => main.focusSelectionItem(main.fetchSelectionItemFromIndex(main.focusedSelectionItemIndex - 1)),
             down:   () => {
                 if (main.fetchSelectionMenuIndex() === 0) {
                     changeFocus("Saved Playlists");
                 } else {
-                    main.focusObject(main.fetchSelectionItemFromIndex(main.focusedSelectionItemIndex + 1), true, true)
+                    main.focusSelectionItem(main.fetchSelectionItemFromIndex(main.focusedSelectionItemIndex + 1))
                 }
             },
             left:   () => main.choosePage(main.focusedPage - 1),
