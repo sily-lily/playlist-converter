@@ -2,8 +2,9 @@ import { fetchCacheData, fetchSettingsData } from "./modules/information";
 import { Container } from "./classes/Container";
 import { Color3 } from "./modules/RGB";
 import { makeBinds } from "./classes/InputManager";
+import { removeDuplicates } from "./modules/miscellaneous";
 
-const main = new Container(70, 21);
+const main = new Container(70, 21, "");
 
 function clean() {
     main.pageItems.clear();
@@ -22,7 +23,7 @@ export function listPlaylists() {
     if (fetchCacheData().savedPlaylists.length !== 0) {
         clean();
         for (const app of fetchCacheData().savedPlaylists) {
-            main.makeSelectionItem(app, false);
+            main.makeSelectionItem(app, false, () => {});
         }
 
         main.choosePage(1);
@@ -38,8 +39,12 @@ export function listApps() {
     if (!main.isObjectFocused("Available Apps")) return;
     if (fetchCacheData().musicApps.length !== 0) {
         clean();
-        for (const app of fetchCacheData().musicApps) {
-            main.makeSelectionItem(app, false);
+        for (let app of fetchCacheData().musicApps) {
+            main.makeSelectionItem(app, false, (pressed: string) => {
+                if (removeDuplicates(pressed).toLocaleLowerCase().includes(removeDuplicates(app).toLowerCase())) {
+                    
+                }
+            });
         }
 
         main.choosePage(1);

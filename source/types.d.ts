@@ -1,4 +1,8 @@
 export type cache = {
+    "translation": {
+        "musicAppFrom": string,
+        "musicAppTo": string
+    },
     savedPlaylists: Array<any>,
     musicApps: Array<string>
 }

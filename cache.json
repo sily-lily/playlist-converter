@@ -1,4 +1,8 @@
 {
+    "translation": {
+        "musicAppFrom": "",
+        "musicAppTo": ""
+    },
     "savedPlaylists": [],
     "musicApps": [
         "Apple Music",

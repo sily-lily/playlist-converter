@@ -1,4 +1,3 @@
-import { toNamespacedPath } from "node:path";
 import { fetchCacheData, fetchProjectVersion, fetchSettingsData } from "../modules/information";
 import { Color3 } from "../modules/RGB";
 import { drawable } from "../types";
@@ -18,7 +17,7 @@ export class Container {
         centerSplit: "╬"
     }
 
-    pageItems: Map<string, [string, number]>;
+    pageItems: Map<string, [string, number, (pressed: string) => any]>;
     highestPage: number;
     focusedPage: number;
     focusedSelectionItem: string;
@@ -34,7 +33,8 @@ export class Container {
     focusedObject: string;
 
     constructor(
-        frameWidth: number = 70, frameHeight: number = 21
+        frameWidth: number = 70, frameHeight: number = 21,
+        name: string
     ) {
         this.pageItems = new Map();
         this.highestPage = 0;
@@ -53,7 +53,7 @@ export class Container {
 
         // Main object (What everything else goes inside) :3
 
-        this.makeFrame("Main", frameWidth, frameHeight, 0, 0, Color3.fromHex(fetchSettingsData().lineColor.unfocused), false, true);
+        this.makeFrame("Main" + name, frameWidth, frameHeight, 0, 0, Color3.fromHex(fetchSettingsData().lineColor.unfocused), false, true);
     }
 
     // Drawing stuff
@@ -248,14 +248,15 @@ export class Container {
 
     makeSelectionItem(
         name: string = `Default Object (${this.fetchSelectionMenuIndex()}) - Selection Menu`,
-        isFocused: boolean
+        isFocused: boolean,
+        callback: (pressed: string) => any
     ) {
         let page = 1;
         if (this.pageItems.size !== 0) {
             let index = 0;
-            this.pageItems.forEach((value: [string, number], key: string) => {
+            this.pageItems.forEach((value: [string, number, (pressed: string) => any], key: string) => {
                 const page = Math.floor(index / 5) + 1;
-                this.pageItems.set(key, [value[0], page]);
+                this.pageItems.set(key, [value[0], page, callback]);
                 index++;
             });
 
@@ -277,7 +278,16 @@ export class Container {
             isFocused
         );
 
-        this.pageItems.set(name, [name, page]);
+        process.stdin.on("keypress", (_: undefined, key: any) => {
+            let action: string | null = null;
+            let pressed = this.focusedSelectionItem;
+            if (!key) return;
+                 if (key.name === "return" || key.name === "enter" || key.sequence === "\r" || key.sequence === "\n") action = "enter";
+            else if (key.name === "space" || key.sequence === " ") action = "enter";
+            if (action) callback(pressed);
+        });
+
+        this.pageItems.set(name, [name, page, callback]);
     }
 
     fetchSelectionItemFromIndex(
@@ -287,7 +297,8 @@ export class Container {
         let object = "";
         let index = 1;
         for (const [_, [item]] of this.pageItems) {
-            if (this.focusedSelectionItemIndex > this.pageItems.size || this.focusedSelectionItemIndex < 1) this.focusedSelectionItemIndex = 1;
+            if (this.focusedSelectionItemIndex > this.pageItems.size) this.focusedSelectionItemIndex = 1;
+            if (this.focusedSelectionItemIndex < 1) this.focusedSelectionItemIndex = this.pageItems.size;
             if (index === this.focusedSelectionItemIndex) {
                 object = item;
                 break;
@@ -337,10 +348,10 @@ export class Container {
             text: `Lily's Playlist Conversion Tool (Page ${this.focusedPage} of ${this.highestPage})`
         });
 
-        for (const [_, [name, page]] of this.pageItems) {
+        for (const [_, [name, page, callback]] of this.pageItems) {
             if (page === this.focusedPage && !this.cache.includes(name)) {
                 this.cache.push(name);
-                this.makeSelectionItem(name, false);
+                this.makeSelectionItem(name, false, callback);
             }
         }
     }
