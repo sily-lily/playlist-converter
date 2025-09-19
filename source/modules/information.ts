@@ -20,7 +20,9 @@ export function fetchProjectVersion(): string {
     }).version;
 }
 
-export function modifyCacheData(modifications: Partial<cache>) {
+export function modifyCacheData(
+    modifications: Partial<cache>
+) {
     const currentCacheData = fetchCacheData();
     const modified = { ...currentCacheData, ...modifications };
     

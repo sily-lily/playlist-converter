@@ -3,6 +3,7 @@ import { Container } from "./classes/Container";
 import { Color3 } from "./classes/RGB";
 import { makeBinds } from "./classes/InputManager";
 import { removeDuplicates } from "./modules/miscellaneous";
+import { EventEmitter } from "node:stream";
 
 const main = new Container(70, 21, "");
 
@@ -42,11 +43,11 @@ export function listApps() {
         for (let app of fetchCacheData().musicApps) {
             main.makeSelectionItem(app, false, (pressed: string, key: any) => {
                 if (removeDuplicates(pressed).toLocaleLowerCase().includes(removeDuplicates(app).toLowerCase())) {
-                    main.pageItems.forEach((value: [string, number, _: any], key: string) => {
-                        if (!value[0].includes(pressed)) {
-                            // main.modify(value[0], {
-                            //     text: (main.fetchProperties(`${value[0]} - Selection Title`)?.text)!.replace("(Converting ", "")
-                            // });
+                    main.pageItems.forEach((value: [string, number, any], key: string) => {
+                        if (value[0] !== pressed) {
+                            main.modify(value[0], {
+                                text: (main.fetchProperties(`${value[0]} - Selection Title`)?.text!).replace("(Converting from)", "").replace("(Converting to)", "")
+                            });
                         }
                     });
                     
@@ -60,6 +61,7 @@ export function listApps() {
                     main.modify(`${pressed} - Selection Title`, {
                         text: `${pressed} (Converting ${key === "space" ? "to" : "from"})`
                     });
+                    main.serve();
                 }
             });
         }
@@ -84,3 +86,4 @@ makeBinds(main);
 // Launch the Program :3
 
 main.serve();
+EventEmitter.setMaxListeners(20);
