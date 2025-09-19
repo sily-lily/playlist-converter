@@ -1,6 +1,6 @@
-import { fetchCacheData, fetchSettingsData } from "./modules/information";
+import { fetchCacheData, fetchSettingsData, modifyCacheData } from "./modules/information";
 import { Container } from "./classes/Container";
-import { Color3 } from "./modules/RGB";
+import { Color3 } from "./classes/RGB";
 import { makeBinds } from "./classes/InputManager";
 import { removeDuplicates } from "./modules/miscellaneous";
 
@@ -40,9 +40,19 @@ export function listApps() {
     if (fetchCacheData().musicApps.length !== 0) {
         clean();
         for (let app of fetchCacheData().musicApps) {
-            main.makeSelectionItem(app, false, (pressed: string) => {
+            main.makeSelectionItem(app, false, (pressed: string, key: any) => {
                 if (removeDuplicates(pressed).toLocaleLowerCase().includes(removeDuplicates(app).toLowerCase())) {
-                    
+                    modifyCacheData({
+                        translation: {
+                            musicAppFrom: key !== "space" ? pressed : fetchCacheData().translation.musicAppFrom,
+                            musicAppTo: key === "space" ? pressed : fetchCacheData().translation.musicAppTo
+                        }
+                    });
+
+                    // TODO: Make this unfocused line color actually work :3
+                    main.modify(`${pressed} - Selection Menu`, {
+                        unfocusedLineColor: key === "space" ? Color3.fromHex("#369ec3") : Color3.fromHex("#c33665")
+                    });
                 }
             });
         }

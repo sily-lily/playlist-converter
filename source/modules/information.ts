@@ -19,3 +19,10 @@ export function fetchProjectVersion(): string {
         version: string
     }).version;
 }
+
+export function modifyCacheData(modifications: Partial<cache>) {
+    const currentCacheData = fetchCacheData();
+    const modified = { ...currentCacheData, ...modifications };
+    
+    fs.writeFileSync(path.join(process.cwd(), "cache.json"), JSON.stringify(modified, null, 2), "utf-8");
+}

@@ -1,5 +1,5 @@
 import { fetchCacheData, fetchProjectVersion, fetchSettingsData } from "../modules/information";
-import { Color3 } from "../modules/RGB";
+import { Color3 } from "./RGB";
 import { drawable } from "../types";
 
 export class Container {
@@ -17,7 +17,7 @@ export class Container {
         centerSplit: "╬"
     }
 
-    pageItems: Map<string, [string, number, (pressed: string) => any]>;
+    pageItems: Map<string, [string, number, (pressed: string, key: any) => any]>;
     highestPage: number;
     focusedPage: number;
     focusedSelectionItem: string;
@@ -135,17 +135,17 @@ export class Container {
                         this.makeLabel(`Default Message (${lineNumber})`, " " + text, beginning, lineNumber + 2, textColor, false, true);
                     }
 
-                    scribbleLine("Focus on the commandline using the keybind :          ", Color3.fromHex(fetchSettingsData().textColor.focused), 1);
-                    scribbleLine("Get detailed help using :help -d and commands using -c", Color3.fromHex(fetchSettingsData().textColor.focused), 2);
+                    scribbleLine("Optionally support me on PayPal or Ko-Fi :3           ", Color3.fromHex(fetchSettingsData().textColor.focused), 1);
+                    scribbleLine("Press space to select an app from, enter to select to",  Color3.fromHex(fetchSettingsData().textColor.focused), 2);
 
-                    scribbleLine("~~~~~", Color3.fromHex(fetchSettingsData().textColor.unfocused), 5);
+                    scribbleLine("~~~~~",                                            Color3.fromHex(fetchSettingsData().textColor.unfocused), 5);
                     scribbleLine("Use the arrow keys to navigate this menu        ", Color3.fromHex(fetchSettingsData().textColor.focused), 6);
                     scribbleLine("Use escape to clear and leave the Selection Menu", Color3.fromHex(fetchSettingsData().textColor.focused), 7);
                     scribbleLine("Use enter to press buttons or submit text fields", Color3.fromHex(fetchSettingsData().textColor.focused), 8);
-                    scribbleLine("~~~~~", Color3.fromHex(fetchSettingsData().textColor.unfocused), 9);
+                    scribbleLine("~~~~~",                                            Color3.fromHex(fetchSettingsData().textColor.unfocused), 9);
 
                     scribbleLine(`Running on version: ${fetchProjectVersion()}                      `, Color3.fromHex(fetchSettingsData().textColor.unfocused), 12);
-                    scribbleLine("github.com/sily-lily ~ lily.transgirls.win            ", Color3.fromHex("#5BCEFA"), 13);
+                    scribbleLine("github.com/sily-lily ~ lily.transgirls.win            ",             Color3.fromHex("#5BCEFA"), 13);
                 } else {
                     for (let index = 0; index <= 14; index++) {
                         this.objects.delete(`Default Message (${index})`);
@@ -249,12 +249,12 @@ export class Container {
     makeSelectionItem(
         name: string = `Default Object (${this.fetchSelectionMenuIndex()}) - Selection Menu`,
         isFocused: boolean,
-        callback: (pressed: string) => any
+        callback: (pressed: string, key: any) => any
     ) {
         let page = 1;
         if (this.pageItems.size !== 0) {
             let index = 0;
-            this.pageItems.forEach((value: [string, number, (pressed: string) => any], key: string) => {
+            this.pageItems.forEach((value: [string, number, (pressed: string, key: any) => any], key: string) => {
                 const page = Math.floor(index / 5) + 1;
                 this.pageItems.set(key, [value[0], page, callback]);
                 index++;
@@ -282,9 +282,9 @@ export class Container {
             let action: string | null = null;
             let pressed = this.focusedSelectionItem;
             if (!key) return;
-                 if (key.name === "return" || key.name === "enter" || key.sequence === "\r" || key.sequence === "\n") action = "enter";
-            else if (key.name === "space" || key.sequence === " ") action = "enter";
-            if (action) callback(pressed);
+                 if (key.sequence == " " || key.name === "return" || key.name === "enter" || key.sequence === "\r" || key.sequence === "\n") action = "enter";
+            else if (key.name === "space") action = "space";
+            if (action) callback(pressed, key.name);
         });
 
         this.pageItems.set(name, [name, page, callback]);

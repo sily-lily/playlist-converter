@@ -1,3 +1,5 @@
+import { Color3 } from "./classes/RGB"
+
 export type cache = {
     "translation": {
         "musicAppFrom": string,
@@ -27,5 +29,6 @@ export type drawable = {
     text?: string,
     textColor?: Color3,
     lineColor?: Color3,
-    isFocused?: boolean
+    isFocused?: boolean,
+    unfocusedLineColor?: Color3
 }

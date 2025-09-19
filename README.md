@@ -1,13 +1,17 @@
 <div align="center">
-  <h5>Yes, I'm aware the default text is a single space off centered, I really don't want to fix it since it's a little hard to notice</h5>
-  <h1>Preview of Version: 1.0.0-alpha</h1>
+  <h1>Update History</h1>
+  <b>9.15.25</b> ~ Start a commandline idea (<b>Removed</b>)<br>
+  <b>9.16.25</b> ~ Finish overall navigation, page and item selection
+  
+  <h1>Preview of Version: 1.0.2-alpha</h1>
+  Preview video has not been updated to version <b>1.0.2-alpha</b> yet. A re-recording will come soon!<br><br>
   <table>
     <tr>
       <td>
-        <img width="485" height="367" alt="image" src="https://github.com/user-attachments/assets/9a7d1d5b-6da9-4a5f-adff-e8583bd20447" />
+        <img width="431" height="286" alt="image" src="https://github.com/user-attachments/assets/115d2f32-5f02-4102-af97-61859013c66a" />
       </td>
       <td>
-        <img width="500" height="367" alt="image" src="https://github.com/user-attachments/assets/086fd70e-86c5-4d78-ab8d-ff93e4ddf07d" />
+        <img width="431" height="286" alt="image" src="https://github.com/user-attachments/assets/34d09630-4426-4d8f-9689-ccb13dc468e8" />
       </td>
   </table>
 

@@ -1,12 +1,12 @@
 {
-    "translation": {
-        "musicAppFrom": "",
-        "musicAppTo": ""
-    },
-    "savedPlaylists": [],
-    "musicApps": [
-        "Apple Music",
-        "Spotify",
-        "YouTube Music"
-    ]
+  "translation": {
+    "musicAppFrom": "Apple Music",
+    "musicAppTo": "Apple Music"
+  },
+  "savedPlaylists": [],
+  "musicApps": [
+    "Apple Music",
+    "Spotify",
+    "YouTube Music"
+  ]
 }
