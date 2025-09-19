@@ -2,6 +2,7 @@
   <h1>Update History</h1>
   <b>9.15.25</b> ~ Start a commandline idea (<b>Removed</b>)<br>
   <b>9.16.25</b> ~ Finish overall navigation, page and item selection
+  <b>9.18.25</b> ~ Start the unfocused line color system
   
   <h1>Preview of Version: 1.0.2-alpha</h1>
   Preview video has not been updated to version <b>1.0.2-alpha</b> yet. A re-recording will come soon!<br><br>
