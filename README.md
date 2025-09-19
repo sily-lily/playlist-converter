@@ -1,7 +1,7 @@
 <div align="center">
   <h1>Update History</h1>
   <b>9.15.25</b> ~ Start a commandline idea (<b>Removed</b>)<br>
-  <b>9.16.25</b> ~ Finish overall navigation, page and item selection
+  <b>9.16.25</b> ~ Finish overall navigation, page and item selection<br>
   <b>9.18.25</b> ~ Start the unfocused line color system
   
   <h1>Preview of Version: 1.0.2-alpha</h1>
