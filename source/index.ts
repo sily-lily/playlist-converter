@@ -42,6 +42,14 @@ export function listApps() {
         for (let app of fetchCacheData().musicApps) {
             main.makeSelectionItem(app, false, (pressed: string, key: any) => {
                 if (removeDuplicates(pressed).toLocaleLowerCase().includes(removeDuplicates(app).toLowerCase())) {
+                    main.pageItems.forEach((value: [string, number, _: any], key: string) => {
+                        if (!value[0].includes(pressed)) {
+                            // main.modify(value[0], {
+                            //     text: (main.fetchProperties(`${value[0]} - Selection Title`)?.text)!.replace("(Converting ", "")
+                            // });
+                        }
+                    });
+                    
                     modifyCacheData({
                         translation: {
                             musicAppFrom: key !== "space" ? pressed : fetchCacheData().translation.musicAppFrom,
@@ -49,9 +57,8 @@ export function listApps() {
                         }
                     });
 
-                    // TODO: Make this unfocused line color actually work :3
-                    main.modify(`${pressed} - Selection Menu`, {
-                        unfocusedLineColor: key === "space" ? Color3.fromHex("#369ec3") : Color3.fromHex("#c33665")
+                    main.modify(`${pressed} - Selection Title`, {
+                        text: `${pressed} (Converting ${key === "space" ? "to" : "from"})`
                     });
                 }
             });

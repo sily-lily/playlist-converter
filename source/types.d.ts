@@ -30,5 +30,5 @@ export type drawable = {
     textColor?: Color3,
     lineColor?: Color3,
     isFocused?: boolean,
-    unfocusedLineColor?: Color3
+    unfocusedLineColor?: string
 }

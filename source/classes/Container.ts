@@ -112,6 +112,12 @@ export class Container {
         this.rescribble();
     }
 
+    fetchProperties(
+        name: string
+    ) {
+        return this.objects.get(name);
+    }
+
     private previousGrid: string[][] = [];
     rescribble() {
         const newGrid: string[][] = Array.from({ length: this.frameHeight + 1 }, () => Array(this.frameWidth + 1).fill(" "));
@@ -219,7 +225,7 @@ export class Container {
         else if (this.focusedSelectionItem.toLowerCase().includes(name.toLowerCase()) && isSelectionItem) this.focusedSelectionItem = "";
 
         this.modify(!isSelectionItem ? `${name} Option` : `${name} - Selection Menu`, {
-            lineColor: Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused),
+            lineColor: Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : this.fetchProperties(`${name} - Selection Menu`)?.unfocusedLineColor || fetchSettingsData().lineColor.unfocused),
             isFocused
         });
 
