@@ -17,7 +17,7 @@ export class Container {
         centerSplit: "╬"
     }
 
-    pageItems: Map<string, [string, number, (pressed: string, key: any) => any]>;
+    pageItems: Map<string, [string, number, string, (pressed: string, key?: any) => any]>;
     highestPage: number;
     focusedPage: number;
     focusedSelectionItem: string;
@@ -252,23 +252,86 @@ export class Container {
         return index;
     }
 
-    makeSelectionItem(
-        name: string = `Default Object (${this.fetchSelectionMenuIndex()}) - Selection Menu`,
-        isFocused: boolean,
-        callback: (pressed: string, key: any) => any
-    ) {
+    fetchPage(
+        callback: any
+    ): number {
         let page = 1;
         if (this.pageItems.size !== 0) {
             let index = 0;
-            this.pageItems.forEach((value: [string, number, (pressed: string, key: any) => any], key: string) => {
+            this.pageItems.forEach((value: [string, number, string, (pressed: string, key: any) => any], key: string) => {
                 const page = Math.floor(index / 5) + 1;
-                this.pageItems.set(key, [value[0], page, callback]);
+                this.pageItems.set(key, [value[0], page, value[2], callback]);
                 index++;
             });
 
             this.highestPage = Math.ceil(this.pageItems.size / 5);
         }
 
+        return page;
+    }
+
+    makeSelectionInput(
+        name: string = `Textbox (${this.fetchSelectionMenuIndex()}) - Selection Menu`,
+        defaultText: string = "", placeholder: string = "Type here ...",
+        isFocused: boolean,
+        callback: (value: string) => any
+    ) {
+        const page = this.fetchPage(callback);
+        const highestLength = 59;
+
+        let buffer = defaultText;
+
+        this.makeFrame(
+            `${name} - Selection Menu`,
+            62, 2,
+            4, 4 + this.fetchSelectionMenuIndex() * 6,
+            Color3.fromHex(isFocused ? fetchSettingsData().lineColor.focused : fetchSettingsData().lineColor.unfocused),
+            isFocused
+        );
+
+        this.makeLabel(
+            `${name} Title - Selection Title`,
+            buffer || placeholder,
+            6, this.fetchSelectionMenuIndex() * 3,
+            Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused),
+            isFocused
+        );
+
+        const render = () => {
+            this.modify(`${name} Title - Selection Title`, {
+                text: buffer.length > 0 ? buffer : placeholder
+            });
+        }
+
+        if (isFocused) {
+            const listener = (__string: string, key: any) => {
+                if (!isFocused) return;
+                if (key.name === "return" || key.name === "enter") {
+                    callback(buffer);
+                    process.stdin.off("keypress", listener);
+                    return;
+                }
+
+                     if (key.name === "backspace") buffer = buffer.slice(0, -1);
+                else if (__string && __string.length === 1 && buffer.length < highestLength) buffer += __string;
+
+                render();
+                this.rescribble();
+                this.serve();
+            }
+
+            process.stdin.on("keypress", listener);
+        }
+
+        this.pageItems.set(name, [name, page, "Input", callback]);
+    }
+
+    makeSelectionItem(
+        name: string = `Default Object (${this.fetchSelectionMenuIndex()}) - Selection Menu`,
+        isFocused: boolean,
+        callback: (pressed: string, key: any) => any
+    ) {
+        const page = this.fetchPage(callback);
         this.makeFrame(
             !name.toLowerCase().includes("- selection menu") ? `${name} - Selection Menu` : name,
             62, 2,
@@ -278,7 +341,7 @@ export class Container {
         );
 
         this.makeLabel(
-            `${name} - Selection Title`, name.replace(" - Selection Menu", ""),
+            `${name} - Selection Title`, name.replace(" - Selection Title", ""),
             6, this.fetchSelectionMenuIndex() * 3,
             Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused),
             isFocused
@@ -293,7 +356,7 @@ export class Container {
             if (action) callback(pressed, key.name);
         });
 
-        this.pageItems.set(name, [name, page, callback]);
+        this.pageItems.set(name, [name, page, "Button", callback]);
     }
 
     fetchSelectionItemFromIndex(
@@ -354,10 +417,13 @@ export class Container {
             text: `Lily's Playlist Conversion Tool (Page ${this.focusedPage} of ${this.highestPage})`
         });
 
-        for (const [_, [name, page, callback]] of this.pageItems) {
+        for (const [_, [name, page, object, callback]] of this.pageItems) {
             if (page === this.focusedPage && !this.cache.includes(name)) {
                 this.cache.push(name);
+
                 this.makeSelectionItem(name, false, callback);
+                //   if (object === "Button") this.makeSelectionItem(name, false, callback);
+                // else this.makeSelectionInput(name, "", "test", true, callback);
             }
         }
     }
