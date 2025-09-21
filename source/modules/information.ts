@@ -2,7 +2,9 @@ import fs, { PathOrFileDescriptor } from "node:fs";
 import path from "node:path";
 import { cache, settings } from "../types";
 
-export function formatJSON(filePath: PathOrFileDescriptor): Object {
+export function formatJSON(
+    filePath: PathOrFileDescriptor
+): Object {
     return JSON.parse(fs.readFileSync(filePath, "utf-8"));
 }
 
