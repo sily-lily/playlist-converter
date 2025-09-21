@@ -9,21 +9,29 @@ export class Color3 {
     G: number = 0;
     B: number = 0;
 
-    constructor(R: number, G: number, B: number) {
+    constructor(
+        R: number, G: number, B: number
+    ) {
         this.R = R;
         this.G = G;
         this.B = B;
     }
 
-    static new(R: number, G: number, B: number) {
+    static new(
+        R: number, G: number, B: number
+    ) {
         return new Color3(R * 255, G * 255, B * 255);
     }
 
-    static fromRGB(R: number, G: number, B: number) {
+    static fromRGB(
+        R: number, G: number, B: number
+    ) {
         return new Color3(R, G, B);
     }
 
-    static fromHSV(H: number, S: number, V: number) {
+    static fromHSV(
+        H: number, S: number, V: number
+    ) {
         var C = V * S;
         var X = C * (1 - Math.abs((H / 60) % 2 - 1));
         var M = V - C;
@@ -41,7 +49,9 @@ export class Color3 {
         );
     }
 
-    static fromHex(hex: string) {
+    static fromHex(
+        hex: string
+    ) {
         if (hex.startsWith("#")) hex = hex.slice(1);
         if (hex.length === 3) hex = hex.split("").map(C => C + C).join("");
         var R = parseInt(hex.slice(0, 2), 16);
@@ -61,7 +71,9 @@ export class Color3 {
      * console.log(Color3.fromRGB(200, 0, 0).toAnsi("Just some silly red text! :3"));
      * ```
      */
-    toAnsi(text: string): string {
+    toAnsi(
+        text: string
+    ): string {
         return `\x1b[38;2;${this.R};${this.G};${this.B}m${text}\x1b[0m`;
     }
 
@@ -75,7 +87,9 @@ export class Color3 {
      * console.log(Color3.fromRGB(0, 200, 0).toAnsiBg("Green background using .fromRGB"));
      * ```
      */
-    toAnsiBg(text: string): string {
+    toAnsiBg(
+        text: string
+    ): string {
         return `\x1b[48;2;${this.R};${this.G};${this.B}m${text}\x1b[0m`;
     }
 }
