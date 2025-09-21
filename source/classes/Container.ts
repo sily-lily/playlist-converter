@@ -17,7 +17,8 @@ export class Container {
         centerSplit: "╬"
     }
 
-    pageItems: Map<string, [string, number, string, (pressed: string, key?: any) => any]>;
+    inputValues: Map<string, string>;
+    pageItems: Map<string, [string, number, string, (pressed: string, key?: any) => any, string?]>;
     highestPage: number;
     focusedPage: number;
     focusedSelectionItem: string;
@@ -36,6 +37,7 @@ export class Container {
         frameWidth: number = 70, frameHeight: number = 21,
         name: string
     ) {
+        this.inputValues = new Map();
         this.pageItems = new Map();
         this.highestPage = 0;
         this.focusedPage = 1;
@@ -207,13 +209,14 @@ export class Container {
     isObjectFocused(
         name: string
     ): boolean {
-        return this.focusedObject.toLowerCase().replace(" Option", "").includes(name.toLowerCase().replace(" Option", ""));
+        return this.focusedObject.toLowerCase().replace(" Option", "").includes(name.toLowerCase().replace(" Option", "")) || this.focusedSelectionItem.toLowerCase().includes(name.toLowerCase());
     }
 
     focusObject(
         name: string,
         isFocused: boolean,
-        isSelectionItem: boolean
+        isSelectionItem: boolean,
+        isInput?: boolean
     ) {
         const base = "Lily's Playlist Conversion Tool";
              if (isFocused && !isSelectionItem) this.focusedObject = name;
@@ -229,8 +232,14 @@ export class Container {
             isFocused
         });
 
-        this.modify(!isSelectionItem ? `${name} Title` : `${name} Title - Selection Title`, {
-            text: titleText, textColor: Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused),
+        if (!isInput && titleText) {
+            this.modify(!isSelectionItem ? `${name} Title` : `${name} - Selection Title`, {
+                text: titleText
+            });
+        }
+
+        this.modify(!isSelectionItem ? `${name} Title` : `${name} - Selection Title`, {
+            textColor: Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused),
             isFocused
         });
 
@@ -258,7 +267,7 @@ export class Container {
         let page = 1;
         if (this.pageItems.size !== 0) {
             let index = 0;
-            this.pageItems.forEach((value: [string, number, string, (pressed: string, key: any) => any], key: string) => {
+            this.pageItems.forEach((value: [string, number, string, (pressed: string, key: any) => any, string?], key: string) => {
                 const page = Math.floor(index / 5) + 1;
                 this.pageItems.set(key, [value[0], page, value[2], callback]);
                 index++;
@@ -270,6 +279,7 @@ export class Container {
         return page;
     }
 
+    private inputListeners: Map<string, (__string: string, key: any) => void> = new Map();
     makeSelectionInput(
         name: string = `Textbox (${this.fetchSelectionMenuIndex()}) - Selection Menu`,
         defaultText: string = "", placeholder: string = "Type here ...",
@@ -279,7 +289,8 @@ export class Container {
         const page = this.fetchPage(callback);
         const highestLength = 59;
 
-        let buffer = defaultText;
+        if (!this.inputValues.has(name)) this.inputValues.set(name, defaultText);
+        let buffer = this.inputValues.get(name)!;
 
         this.makeFrame(
             `${name} - Selection Menu`,
@@ -290,40 +301,47 @@ export class Container {
         );
 
         this.makeLabel(
-            `${name} Title - Selection Title`,
+            `${name} - Selection Title`,
             buffer || placeholder,
             6, this.fetchSelectionMenuIndex() * 3,
             Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused),
             isFocused
         );
 
-        const render = () => {
-            this.modify(`${name} Title - Selection Title`, {
-                text: buffer.length > 0 ? buffer : placeholder
+        const render = (content: string) => {
+            this.modify(`${name} - Selection Title`, {
+                text: content.length > 0 ? content : placeholder
             });
+        };
+
+        const existingListener = this.inputListeners.get(name);
+        if (existingListener) {
+            process.stdin.off("keypress", existingListener);
+            this.inputListeners.delete(name);
         }
 
-        if (isFocused) {
-            const listener = (__string: string, key: any) => {
-                if (!isFocused) return;
-                if (key.name === "return" || key.name === "enter") {
-                    callback(buffer);
-                    process.stdin.off("keypress", listener);
-                    return;
-                }
-
-                     if (key.name === "backspace") buffer = buffer.slice(0, -1);
-                else if (__string && __string.length === 1 && buffer.length < highestLength) buffer += __string;
-
-                render();
-                this.rescribble();
-                this.serve();
+        const listener = (__string: string, key: any) => {
+            if (!this.isObjectFocused(name)) return;
+            let currentBuffer = this.inputValues.get(name)!;
+            if (key.name === "return" || key.name === "enter") {
+                callback(currentBuffer);
+                process.stdin.off("keypress", listener);
+                return;
             }
 
-            process.stdin.on("keypress", listener);
-        }
+                 if (key.name === "backspace") currentBuffer = currentBuffer.slice(0, -1);
+            else if (__string && __string.length === 1 && currentBuffer.length < highestLength) currentBuffer += __string;
 
-        this.pageItems.set(name, [name, page, "Input", callback]);
+            this.inputValues.set(name, currentBuffer);
+            render(currentBuffer);
+            this.rescribble();
+            this.serve();
+        };
+
+        process.stdin.on("keypress", listener);
+
+        this.inputListeners.set(name, listener);
+        this.pageItems.set(name, [name, page, "Input", callback, placeholder]);
     }
 
     makeSelectionItem(
@@ -394,8 +412,10 @@ export class Container {
     focusSelectionItem(
         name: string
     ) {
+        const item = this.pageItems.get(name);
+        const isTextBox = item?.[2] !== "Button";
         for (let index = 0; index <= this.pageItems.size; index++) {
-            this.focusObject(this.fetchSelectionItemFromIndex(index), false, true);
+            this.focusObject(this.fetchSelectionItemFromIndex(index), false, true, isTextBox);
         }
 
         this.focusObject(name, true, true);
@@ -417,13 +437,12 @@ export class Container {
             text: `Lily's Playlist Conversion Tool (Page ${this.focusedPage} of ${this.highestPage})`
         });
 
-        for (const [_, [name, page, object, callback]] of this.pageItems) {
+        for (const [_, [name, page, object, callback, placeholder]] of this.pageItems) {
             if (page === this.focusedPage && !this.cache.includes(name)) {
                 this.cache.push(name);
 
-                this.makeSelectionItem(name, false, callback);
-                //   if (object === "Button") this.makeSelectionItem(name, false, callback);
-                // else this.makeSelectionInput(name, "", "test", true, callback);
+                  if (object === "Button") this.makeSelectionItem(name, false, callback);
+                else this.makeSelectionInput(name, this.inputValues.get(name) ?? "", placeholder, false, callback);
             }
         }
     }
