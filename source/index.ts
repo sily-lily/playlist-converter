@@ -32,11 +32,11 @@ export function listPlaylists() {
         clean();
         if (fetchCacheData().translation.musicAppFrom.trim() !== "") {
             main.makeSelectionInput("Playlist Search", "", `Provide ${fetchCacheData().translation.musicAppFrom === "Apple Music" ? "an" : "a"} public ${fetchCacheData().translation.musicAppFrom} playlist URL`, false, (value: string) => {
-                process.stdin.write(value);
+                
             });
 
             main.makeSelectionInput("Song Search", "", `Search ${fetchCacheData().translation.musicAppFrom} using the format: <Song>|<Artist>`, false, (value: string) => {
-                process.stdin.write(value);
+                
             });
         } else {
             main.makeSelectionItem("Select an app before searching your playlists!", false, () => {})
@@ -56,7 +56,7 @@ export function listApps() {
         for (let app of fetchCacheData().musicApps) {
             main.makeSelectionItem(app, false, (pressed: string, key: any) => {
                 if (removeDuplicates(pressed).toLocaleLowerCase().includes(removeDuplicates(app).toLowerCase())) {
-                    main.pageItems.forEach((value: [string, number, string, any], _: string) => {
+                    main.pageItems.forEach((value: [string, number, string, any, string?], _: string) => {
                         if (value[0] !== pressed) {
                             main.modify(`${value[0]} - Selection Title`, {
                                 text: (main.fetchProperties(`${value[0]} - Selection Title`)?.text!).replace(key === "space" ? "(Converting to)" : "(Converting from)", "")
