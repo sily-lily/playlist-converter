@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Update History</h1>
-  Latest version: 1.0.4-alpha
+  Latest version: 1.0.4-alpha<br>
   <b>9.15.25</b> ~ Start a commandline idea (<b>Removed</b>)<br>
   <b>9.16.25</b> ~ Finish overall navigation, page and item selection<br>
   <b>9.18.25</b> ~ Start the unfocused line color system<br>
