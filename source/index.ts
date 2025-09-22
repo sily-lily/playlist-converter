@@ -54,19 +54,35 @@ export function listPlaylists() {
                             main.clearSelectionMenu();
                             if (value.length !== 0) {
                                 value.forEach((value: string[], _: number) => {
-                                    main.makeSelectionItem(`"${value[0]}" by ${value[1]}`, false, (pressed: string, key: any) => {
+                                    const title = `${fetchCacheData().addedSongs.includes(`\"${value[0]}\" by ${value[1]}`) ? "(Selected) " : ""}"${value[0]}" by ${value[1]}`;
+                                    main.makeSelectionItem(title, false, (pressed: string, key: any) => {
                                         if (key === "return") {
                                             
                                         } else if (key === "space") {
-                                            const cache = fetchCacheData().addedSongs;
-                                            if (cache.includes(pressed)) return;
-                                            cache.push(pressed);
+                                            let cache = fetchCacheData().addedSongs;
+                                            if (cache.includes(pressed.replace("(Selected) ", ""))) {
+                                                cache.push(pressed); 
+                                            } else {
+                                                const newCache: string[] = [];
+                                                for (const item of cache) {
+                                                    if (item !== pressed) newCache.push(item);
+                                                }
+
+                                                cache = newCache;
+                                            }
+
                                             modifyCacheData({
                                                 addedSongs: cache
+                                            });
+
+                                            main.modify(`${pressed} - Selection Title`, {
+                                                text: `${fetchCacheData().addedSongs.includes(pressed.replace("(Selected) ", "")) ? "(Selected) " : ""}${pressed}`
                                             });
                                         }
                                     });
                                 });
+                                
+                                main.choosePage(1);
                             } else {
                                 main.makeSelectionItem("No results found; Press enter twice to retry", false, (pressed: string, key: any) => {
                                     if (key === "return" || key === "space") {

@@ -148,9 +148,9 @@ export class Container {
                     scribbleLine("Press space to select an app from, enter to select to",  Color3.fromHex(fetchSettingsData().textColor.focused), 2);
 
                     scribbleLine("~~~~~",                                            Color3.fromHex(fetchSettingsData().textColor.unfocused), 5);
-                    scribbleLine("Use space to add, enter to make playlist with saved songs", Color3.fromHex(fetchSettingsData().textColor.focused), 6);
-                    scribbleLine("Use escape to clear and leave the Selection Menu         ", Color3.fromHex(fetchSettingsData().textColor.focused), 7);
-                    scribbleLine("Use enter to press buttons or submit text fields         ", Color3.fromHex(fetchSettingsData().textColor.focused), 8);
+                    scribbleLine("Use space to toggle, enter to make a new playlist", Color3.fromHex(fetchSettingsData().textColor.focused), 6);
+                    scribbleLine("Use escape to clear and leave the Selection Menu ", Color3.fromHex(fetchSettingsData().textColor.focused), 7);
+                    scribbleLine("Use enter to press buttons or submit text fields ", Color3.fromHex(fetchSettingsData().textColor.focused), 8);
                     scribbleLine("~~~~~",                                            Color3.fromHex(fetchSettingsData().textColor.unfocused), 9);
 
                     scribbleLine(`Running on version: ${fetchProjectVersion()}                      `, Color3.fromHex(fetchSettingsData().textColor.unfocused), 12);
@@ -384,6 +384,9 @@ export class Container {
                 callback(pressed, key.name);
                 process.stdin.off("keypress", listener);
             }
+
+            this.rescribble();
+            this.serve();
         };
 
         process.stdin.on("keypress", listener);
