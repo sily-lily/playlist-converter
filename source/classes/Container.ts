@@ -102,7 +102,7 @@ export class Container {
     ) {
         const object = this.objects.get(name);
         if (!object) return;
-
+        
         Object.assign(object, properties);
         this.rescribble();
     }
@@ -327,6 +327,8 @@ export class Container {
             if (key.name === "return" || key.name === "enter") {
                 callback(currentBuffer);
                 process.stdin.off("keypress", listener);
+                this.rescribble();
+                this.serve();
                 return;
             }
 
@@ -382,7 +384,6 @@ export class Container {
             else if (key.name === "space") action = "space";
             if (action) {
                 callback(pressed, key.name);
-                process.stdin.off("keypress", listener);
             }
 
             this.rescribble();

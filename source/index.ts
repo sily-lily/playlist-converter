@@ -60,23 +60,17 @@ export function listPlaylists() {
                                             
                                         } else if (key === "space") {
                                             let cache = fetchCacheData().addedSongs;
-                                            if (cache.includes(pressed.replace("(Selected) ", ""))) {
-                                                cache.push(pressed); 
-                                            } else {
-                                                const newCache: string[] = [];
-                                                for (const item of cache) {
-                                                    if (item !== pressed) newCache.push(item);
-                                                }
-
-                                                cache = newCache;
-                                            }
+                                            const cleansed = pressed.replace("(Selected) ", "");
+                                              if (!cache.includes(cleansed)) cache.push(cleansed); 
+                                            else cache = cache.filter(item => item !== cleansed);
 
                                             modifyCacheData({
                                                 addedSongs: cache
                                             });
 
+                                            const text = `${fetchCacheData().addedSongs.includes(cleansed) ? "(Selected) " : ""}${cleansed}`;
                                             main.modify(`${pressed} - Selection Title`, {
-                                                text: `${fetchCacheData().addedSongs.includes(pressed.replace("(Selected) ", "")) ? "(Selected) " : ""}${pressed}`
+                                                text: text.replace(" - Selection Title", "").length > 59 ? text.replace(" - Selection Title", "").slice(0, 55) + " ..." : text.replace(" - Selection Title", "")
                                             });
                                         }
                                     });
