@@ -1,6 +1,6 @@
 <div align="center">
+  Project is using version: <b>1.0.5-alpha</b><br>
   <h1>Update History</h1>
-  Latest version: 1.0.5-alpha<br><br>
   <b>9.15.25</b> ~ Start a commandline idea (<b>Removed</b>)<br>
   <b>9.16.25</b> ~ Finish overall navigation, page and item selection<br>
   <b>9.18.25</b> ~ Start the unfocused line color system<br>
