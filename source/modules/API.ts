@@ -4,7 +4,6 @@ export async function searchSong(
     app: string,
     name: string
 ): Promise<string[][]> {
-    // [[Song: <String>, Artist: <String>]]
     const songs: string[][] = [];
     switch (app.toLowerCase()) {
         case "apple music":
@@ -14,15 +13,13 @@ export async function searchSong(
         case "youtube music":
             const Client = new YTMusic();
             await Client.initialize();
-
-            Client.search(name).then(found => {
-                found.forEach(song => {
-                    try {
-                        if (song.type === "SONG") {
-                            songs.push([song.name, song.artist.name]);
-                        }
-                    } catch {};
-                })
+            
+            const found = await Client.search(name);
+            found.forEach(song => {
+                if (song.type === "SONG" || song.type === "VIDEO") {
+                    if (songs.includes([song.name, song.artist.name])) return;
+                    songs.push([song.name, song.artist.name]);
+                }
             });
     }
 

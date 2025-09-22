@@ -1,9 +1,11 @@
 <div align="center">
   <h1>Update History</h1>
+  Latest version: 1.0.4-alpha
   <b>9.15.25</b> ~ Start a commandline idea (<b>Removed</b>)<br>
   <b>9.16.25</b> ~ Finish overall navigation, page and item selection<br>
   <b>9.18.25</b> ~ Start the unfocused line color system<br>
   <b>9.19.25</b> ~ Write a new method for creating inputs in the Selection Menu
+  <b>9.22.25</b> ~ Add YouTube Music searching and fix text with buttons
   
   <h1>Preview of Version: 1.0.2-alpha</h1>
   Preview video has not been updated to version <b>1.0.2-alpha</b> yet. A re-recording will come soon!<br><br>

@@ -5,7 +5,8 @@ export type cache = {
         "musicAppFrom": string,
         "musicAppTo": string
     },
-    savedPlaylists: Array<any>,
+    addedSongs: Array<string>
+    savedPlaylists: Array<string>,
     musicApps: Array<string>
 }
 
@@ -30,5 +31,6 @@ export type drawable = {
     textColor?: Color3,
     lineColor?: Color3,
     isFocused?: boolean,
-    unfocusedLineColor?: string
+    unfocusedLineColor?: string,
+    fullText?: string
 }

@@ -90,7 +90,8 @@ export class Container {
             type: "text",
             X, Y,
             text, textColor,
-            isFocused
+            isFocused,
+            fullText: name.replace(" - Selection Title", "")
         });
         if (!avoidDrawing) this.rescribble();
     }
@@ -147,9 +148,9 @@ export class Container {
                     scribbleLine("Press space to select an app from, enter to select to",  Color3.fromHex(fetchSettingsData().textColor.focused), 2);
 
                     scribbleLine("~~~~~",                                            Color3.fromHex(fetchSettingsData().textColor.unfocused), 5);
-                    scribbleLine("Use the arrow keys to navigate this menu        ", Color3.fromHex(fetchSettingsData().textColor.focused), 6);
-                    scribbleLine("Use escape to clear and leave the Selection Menu", Color3.fromHex(fetchSettingsData().textColor.focused), 7);
-                    scribbleLine("Use enter to press buttons or submit text fields", Color3.fromHex(fetchSettingsData().textColor.focused), 8);
+                    scribbleLine("Use space to add, enter to make playlist with saved songs", Color3.fromHex(fetchSettingsData().textColor.focused), 6);
+                    scribbleLine("Use escape to clear and leave the Selection Menu         ", Color3.fromHex(fetchSettingsData().textColor.focused), 7);
+                    scribbleLine("Use enter to press buttons or submit text fields         ", Color3.fromHex(fetchSettingsData().textColor.focused), 8);
                     scribbleLine("~~~~~",                                            Color3.fromHex(fetchSettingsData().textColor.unfocused), 9);
 
                     scribbleLine(`Running on version: ${fetchProjectVersion()}                      `, Color3.fromHex(fetchSettingsData().textColor.unfocused), 12);
@@ -344,6 +345,7 @@ export class Container {
         this.pageItems.set(name, [name, page, "Input", callback, placeholder]);
     }
 
+    private itemListeners: Map<string, (__string: string, key: any) => void> = new Map();
     makeSelectionItem(
         name: string = `Default Object (${this.fetchSelectionMenuIndex()}) - Selection Menu`,
         isFocused: boolean,
@@ -359,21 +361,34 @@ export class Container {
         );
 
         this.makeLabel(
-            `${name} - Selection Title`, name.replace(" - Selection Title", ""),
+            `${name} - Selection Title`, name.replace(" - Selection Title", "").length > 59 ? name.replace(" - Selection Title", "").slice(0, 55) + " ..." : name.replace(" - Selection Title", ""),
             6, this.fetchSelectionMenuIndex() * 3,
             Color3.fromHex(isFocused ? fetchSettingsData().textColor.focused : fetchSettingsData().textColor.unfocused),
             isFocused
         );
 
-        process.stdin.on("keypress", (_: undefined, key: any) => {
+        const existingListener = this.itemListeners.get(name);
+        if (existingListener) {
+            process.stdin.off("keypress", existingListener);
+            this.itemListeners.delete(name);
+        }
+
+        const listener = (__string: string, key: any) => {
+            if (!this.isObjectFocused(name)) return;
             let action: string | null = null;
             let pressed = this.focusedSelectionItem;
             if (!key) return;
                  if (key.sequence == " " || key.name === "return" || key.name === "enter" || key.sequence === "\r" || key.sequence === "\n") action = "enter";
             else if (key.name === "space") action = "space";
-            if (action) callback(pressed, key.name);
-        });
+            if (action) {
+                callback(pressed, key.name);
+                process.stdin.off("keypress", listener);
+            }
+        };
 
+        process.stdin.on("keypress", listener);
+
+        this.itemListeners.set(name, listener);
         this.pageItems.set(name, [name, page, "Button", callback]);
     }
 

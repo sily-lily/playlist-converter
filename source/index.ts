@@ -4,6 +4,7 @@ import { Color3 } from "./classes/RGB";
 import { makeBinds } from "./classes/InputManager";
 import { removeDuplicates } from "./modules/miscellaneous";
 import { EventEmitter } from "node:stream";
+import { searchSong } from "./modules/API";
 
 const main = new Container(70, 21, "");
 
@@ -31,13 +32,56 @@ export function listPlaylists() {
     } else {
         clean();
         if (fetchCacheData().translation.musicAppFrom.trim() !== "") {
-            main.makeSelectionInput("Playlist Search", "", `Provide ${fetchCacheData().translation.musicAppFrom === "Apple Music" ? "an" : "a"} public ${fetchCacheData().translation.musicAppFrom} playlist URL`, false, (value: string) => {
+            function showSearches() {
+                main.makeSelectionInput("Playlist Search", "", `Provide ${fetchCacheData().translation.musicAppFrom === "Apple Music" ? "an" : "a"} public ${fetchCacheData().translation.musicAppFrom} playlist URL`, false, (value: string) => {
                 
-            });
+                });
 
-            main.makeSelectionInput("Song Search", "", `Search ${fetchCacheData().translation.musicAppFrom} using the format: <Song>|<Artist>`, false, (value: string) => {
-                
-            });
+                main.makeSelectionInput("Song Search", "", `Search for a song on ${fetchCacheData().translation.musicAppFrom}`, false, (value: string) => {
+                    if (value.trim() === "") {
+                        clean();
+                        main.clearSelectionMenu();
+                        main.makeSelectionItem("Searches cannot be empty; Press enter twice to retry", false, (pressed: string, key: any) => {
+                            if (key === "return" || key === "space") {
+                                clean();
+                                main.clearSelectionMenu();
+                                listPlaylists();
+                            }
+                        });
+                    } else {
+                        searchSong(fetchCacheData().translation.musicAppFrom, value).then((value: string[][]) => {
+                            clean();
+                            main.clearSelectionMenu();
+                            if (value.length !== 0) {
+                                value.forEach((value: string[], _: number) => {
+                                    main.makeSelectionItem(`"${value[0]}" by ${value[1]}`, false, (pressed: string, key: any) => {
+                                        if (key === "return") {
+                                            
+                                        } else if (key === "space") {
+                                            const cache = fetchCacheData().addedSongs;
+                                            if (cache.includes(pressed)) return;
+                                            cache.push(pressed);
+                                            modifyCacheData({
+                                                addedSongs: cache
+                                            });
+                                        }
+                                    });
+                                });
+                            } else {
+                                main.makeSelectionItem("No results found; Press enter twice to retry", false, (pressed: string, key: any) => {
+                                    if (key === "return" || key === "space") {
+                                        clean();
+                                        main.clearSelectionMenu();
+                                        listPlaylists();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            showSearches();
         } else {
             main.makeSelectionItem("Select an app before searching your playlists!", false, () => {})
         }
