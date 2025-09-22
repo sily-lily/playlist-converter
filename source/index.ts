@@ -2,7 +2,7 @@ import { fetchCacheData, fetchSettingsData, modifyCacheData } from "./modules/in
 import { Container } from "./classes/Container";
 import { Color3 } from "./classes/RGB";
 import { makeBinds } from "./classes/InputManager";
-import { removeDuplicates } from "./modules/miscellaneous";
+import { outApp, removeDuplicates } from "./modules/miscellaneous";
 import { EventEmitter } from "node:stream";
 import { searchSong } from "./modules/API";
 
@@ -41,7 +41,7 @@ export function listPlaylists() {
                     if (value.trim() === "") {
                         clean();
                         main.clearSelectionMenu();
-                        main.makeSelectionItem("Searches cannot be empty; Press enter twice to retry", false, (pressed: string, key: any) => {
+                        main.makeSelectionItem("Searches cannot be empty; please try again", false, (pressed: string, key: any) => {
                             if (key === "return" || key === "space") {
                                 clean();
                                 main.clearSelectionMenu();
@@ -57,13 +57,37 @@ export function listPlaylists() {
                                     const title = `${fetchCacheData().addedSongs.includes(`\"${value[0]}\" by ${value[1]}`) ? "(Selected) " : ""}"${value[0]}" by ${value[1]}`;
                                     main.makeSelectionItem(title, false, (pressed: string, key: any) => {
                                         if (key === "return") {
-                                            
+                                            if (fetchCacheData().addedSongs.length === 0) return;
+                                            clean();
+                                            main.clearSelectionMenu();
+                                            switch (outApp().toLowerCase()) {
+                                                case "none":
+                                                    main.makeSelectionItem("Select an app to convert to before making playlists", false, (pressed: string, key: any) => {
+                                                        if (key === "space" || key === "return") {
+                                                            clean();
+                                                            main.clearSelectionMenu();
+                                                        }
+                                                    });
+                                                    break;
+
+                                                case "token":
+                                                    main.makeSelectionItem(`Set your ${fetchCacheData().translation.musicAppTo} token in the ".env" file first`, false, (pressed: string, key: any) => {
+                                                        if (key === "space" || key === "return") {
+                                                            clean();
+                                                            main.clearSelectionMenu();
+                                                        }
+                                                    });
+                                                    break;
+
+                                                default:
+                                                    main.makeSelectionItem("test", false, () => {});
+                                                    break;
+                                            }
                                         } else if (key === "space") {
                                             let cache = fetchCacheData().addedSongs;
                                             const cleansed = pressed.replace("(Selected) ", "");
                                               if (!cache.includes(cleansed)) cache.push(cleansed); 
                                             else cache = cache.filter(item => item !== cleansed);
-
                                             modifyCacheData({
                                                 addedSongs: cache
                                             });
@@ -78,7 +102,7 @@ export function listPlaylists() {
                                 
                                 main.choosePage(1);
                             } else {
-                                main.makeSelectionItem("No results found; Press enter twice to retry", false, (pressed: string, key: any) => {
+                                main.makeSelectionItem("No results found; please try again", false, (pressed: string, key: any) => {
                                     if (key === "return" || key === "space") {
                                         clean();
                                         main.clearSelectionMenu();
@@ -93,7 +117,12 @@ export function listPlaylists() {
 
             showSearches();
         } else {
-            main.makeSelectionItem("Select an app before searching your playlists!", false, () => {})
+            main.makeSelectionItem("Select an app to convert from before searching", false, (pressed: string, key: any) => {
+                if (key === "space" || key === "return") {
+                    clean();
+                    main.clearSelectionMenu();
+                }
+            });
         }
     }
 }
@@ -109,7 +138,7 @@ export function listApps() {
         clean();
         for (let app of fetchCacheData().musicApps) {
             main.makeSelectionItem(app, false, (pressed: string, key: any) => {
-                if (removeDuplicates(pressed).toLocaleLowerCase().includes(removeDuplicates(app).toLowerCase())) {
+                if (removeDuplicates(pressed).toLowerCase().includes(removeDuplicates(app).toLowerCase())) {
                     main.pageItems.forEach((value: [string, number, string, any, string?], _: string) => {
                         if (value[0] !== pressed) {
                             main.modify(`${value[0]} - Selection Title`, {
@@ -118,10 +147,18 @@ export function listApps() {
                         }
                     });
                     
+                    const currentData = fetchCacheData().translation;
+                    let newFrom = key === "return" ? pressed : currentData.musicAppFrom;
+                    let newTo = key === "space" ? pressed : currentData.musicAppTo;
+                    if (newFrom === newTo) {
+                          if (newFrom !== "") newFrom = "";
+                        else newTo = "";
+                    }
+
                     modifyCacheData({
                         translation: {
-                            musicAppFrom: key !== "space" ? pressed : fetchCacheData().translation.musicAppFrom,
-                            musicAppTo: key === "space" ? pressed : fetchCacheData().translation.musicAppTo
+                            musicAppFrom: newFrom,
+                            musicAppTo: newTo
                         }
                     });
 

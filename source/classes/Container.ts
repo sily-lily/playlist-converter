@@ -347,7 +347,6 @@ export class Container {
         this.pageItems.set(name, [name, page, "Input", callback, placeholder]);
     }
 
-    private itemListeners: Map<string, (__string: string, key: any) => void> = new Map();
     makeSelectionItem(
         name: string = `Default Object (${this.fetchSelectionMenuIndex()}) - Selection Menu`,
         isFocused: boolean,
@@ -369,12 +368,6 @@ export class Container {
             isFocused
         );
 
-        const existingListener = this.itemListeners.get(name);
-        if (existingListener) {
-            process.stdin.off("keypress", existingListener);
-            this.itemListeners.delete(name);
-        }
-
         const listener = (__string: string, key: any) => {
             if (!this.isObjectFocused(name)) return;
             let action: string | null = null;
@@ -391,8 +384,6 @@ export class Container {
         };
 
         process.stdin.on("keypress", listener);
-
-        this.itemListeners.set(name, listener);
         this.pageItems.set(name, [name, page, "Button", callback]);
     }
 

@@ -1,3 +1,6 @@
+import { configDotenv } from "dotenv";
+import { fetchCacheData } from "./information";
+
 export function wait(
   seconds: number,
   callback: () => any
@@ -16,4 +19,24 @@ export function removeDuplicates(
   }
 
   return input;
+}
+
+export function outApp(): string {
+  configDotenv({ quiet: true });
+  let app = fetchCacheData().translation.musicAppTo !== "" ? fetchCacheData().translation.musicAppTo : "None";
+  switch (app.toLowerCase()) {
+    case "apple music":
+      if (process.env.APPLE_MUSIC_TOKEN === "") app = "Token";
+      break;
+    
+    case "spotify":
+      if (process.env.SPOTIFY_TOKEN === "") app = "Token";
+      break;
+
+    case "youtube music":
+      if (process.env.YOUTUBE_MUSIC_TOKEN === "") app = "Token";
+      break;
+  }
+
+  return app;
 }

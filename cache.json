@@ -1,9 +1,11 @@
 {
   "translation": {
-    "musicAppFrom": "YouTube Music",
-    "musicAppTo": ""
+    "musicAppFrom": "",
+    "musicAppTo": "YouTube Music"
   },
-  "addedSongs": [],
+  "addedSongs": [
+    "\"Purple Pills\" by D12"
+  ],
   "savedPlaylists": [],
   "musicApps": [
     "Apple Music",

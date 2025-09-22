@@ -7,9 +7,11 @@ export async function searchSong(
     const songs: string[][] = [];
     switch (app.toLowerCase()) {
         case "apple music":
-            
+            break;    
+
         case "spotify":
-            
+            break;    
+
         case "youtube music":
             const Client = new YTMusic();
             await Client.initialize();
@@ -21,6 +23,7 @@ export async function searchSong(
                     songs.push([song.name, song.artist.name]);
                 }
             });
+            break;
     }
 
     return songs;
