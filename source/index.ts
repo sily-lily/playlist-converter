@@ -2,7 +2,7 @@ import { fetchCacheData, fetchSettingsData, modifyCacheData } from "./modules/in
 import { Container } from "./classes/Container";
 import { Color3 } from "./classes/RGB";
 import { makeBinds } from "./classes/InputManager";
-import { outApp, removeDuplicates } from "./modules/miscellaneous";
+import { outApp } from "./modules/miscellaneous";
 import { EventEmitter } from "node:stream";
 import { searchSong } from "./modules/API";
 
@@ -138,34 +138,41 @@ export function listApps() {
         clean();
         for (let app of fetchCacheData().musicApps) {
             main.makeSelectionItem(app, false, (pressed: string, key: any) => {
-                if (removeDuplicates(pressed).toLowerCase().includes(removeDuplicates(app).toLowerCase())) {
-                    main.pageItems.forEach((value: [string, number, string, any, string?], _: string) => {
-                        if (value[0] !== pressed) {
-                            main.modify(`${value[0]} - Selection Title`, {
-                                text: (main.fetchProperties(`${value[0]} - Selection Title`)?.text!).replace(key === "space" ? "(Converting to)" : "(Converting from)", "")
-                            });
-                        }
-                    });
-                    
-                    let newFrom = (key === "return" || key === "enter") ? pressed : fetchCacheData().translation.musicAppFrom;
-                    let newTo = key === "space" ? pressed : fetchCacheData().translation.musicAppTo;
-                    if (newFrom === newTo) {
-                        if (newFrom !== "") newFrom = "";
-                        if (newTo !== "") newTo = "";
+                main.pageItems.forEach((value: [string, number, string, any, string?], _: string) => {
+                    if (value[0] !== pressed) {
+                        main.modify(`${value[0]} - Selection Title`, {
+                            text: (main.fetchProperties(`${value[0]} - Selection Title`)?.text!).replace(key === "space" ? "(Converting to)" : "(Converting from)", "")
+                        });
                     }
-
-                    modifyCacheData({
-                        translation: {
-                            musicAppFrom: newFrom,
-                            musicAppTo: newTo
-                        }
-                    });
-
-                    main.modify(`${pressed} - Selection Title`, {
-                        text: `${pressed} (Converting ${key === "space" ? "to" : "from"})`
-                    });
-                    main.serve();
+                });
+                
+                let normalizedPressed = pressed.trim();
+                let normalizedFrom = fetchCacheData().translation.musicAppFrom.trim();
+                let normalizedTo = fetchCacheData().translation.musicAppTo.trim();
+                let newFrom = (key === "return" || key === "enter") ? normalizedPressed : normalizedFrom;
+                let newTo = (key === "space") ? normalizedPressed : normalizedTo;
+                if (newFrom === newTo && newFrom !== "") {
+                    if (key === "space") {
+                        newFrom = "";
+                        newTo = normalizedPressed;
+                    } else {
+                        newFrom = normalizedPressed;
+                        newTo = "";
+                    }
                 }
+
+                modifyCacheData({
+                    translation: {
+                        musicAppFrom: newFrom,
+                        musicAppTo: newTo
+                    }
+                });
+
+                main.modify(`${pressed} - Selection Title`, {
+                    text: `${pressed} (Converting ${key === "space" ? "to" : "from"})`
+                });
+
+                main.serve();
             });
         }
 

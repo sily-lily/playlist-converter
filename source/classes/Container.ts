@@ -382,10 +382,7 @@ export class Container {
             if (!key) return;
                  if (key.sequence == " " || key.name === "return" || key.name === "enter" || key.sequence === "\r" || key.sequence === "\n") action = "enter";
             else if (key.name === "space") action = "space";
-            if (action) {
-                callback(pressed, key.name);
-            }
-
+            if (action) callback(pressed, key.name);
             this.rescribble();
             this.serve();
         };
@@ -473,6 +470,14 @@ export class Container {
         for (const object of this.objects) {
             if (object[0].toLowerCase().includes("- selection menu") || object[0].toLowerCase().includes("- selection title")) {
                 this.remove(object[0], this.objects);
+            }
+        }
+
+        for (const item of this.pageItems) {
+            if (this.inputListeners.has(item[1][0])) {
+                process.stdin.off("keypress", this.inputListeners.get(item[1][0]) as any);
+            } else if (this.itemListeners.has(item[1][0])) {
+                process.stdin.off("keypress", this.itemListeners.get(item[1][0]) as any);
             }
         }
 
