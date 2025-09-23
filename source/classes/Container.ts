@@ -397,7 +397,7 @@ export class Container {
     fetchSelectionItemFromIndex(
         desiredIndex: number
     ): string {
-        this.focusedSelectionItemIndex = desiredIndex;
+        this.focusedSelectionItemIndex = desiredIndex % 6 === 0 ? 0 : desiredIndex; // Only works for first page
         let object = "";
         let index = 1;
         for (const [_, [item]] of this.pageItems) {
