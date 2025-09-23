@@ -1,6 +1,6 @@
 {
   "name": "playlist-converter",
-  "version": "1.0.5-alpha",
+  "version": "1.1.0-alpha",
   "description": "Convert any public playlist between popular platforms like Apple Music, Spotify, and YouTube Music",
   "main": "index.js",
   "scripts": {

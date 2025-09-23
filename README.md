@@ -1,11 +1,12 @@
 <div align="center">
-  Project is using version: <b>1.0.5-alpha</b><br>
+  Project is using version: <b>1.1.0-alpha</b><br>
   <h1>Update History</h1>
   <b>9.15.25</b> ~ Start a commandline idea (<b>Removed</b>)<br>
   <b>9.16.25</b> ~ Finish overall navigation, page and item selection<br>
   <b>9.18.25</b> ~ Start the unfocused line color system<br>
   <b>9.19.25</b> ~ Write a new method for creating inputs in the Selection Menu<br>
-  <b>9.22.25</b> ~ Add YouTube Music searching, fix buttons, add checks for conversion
+  <b>9.22.25</b> ~ Add YouTube Music searching, fix buttons, add checks for conversion<br>
+  <b>9.23.25</b> ~ Fix music app selection bug
   
   <h1>Preview of Version: 1.0.2-alpha</h1>
   Preview video has not been updated to version <b>1.0.2-alpha</b> yet. A re-recording will come soon!<br><br>

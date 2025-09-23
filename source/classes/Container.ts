@@ -102,7 +102,8 @@ export class Container {
     ) {
         const object = this.objects.get(name);
         if (!object) return;
-        
+
+        this.cache = this.cache.filter(item => item !== name);
         Object.assign(object, properties);
         this.rescribble();
     }
