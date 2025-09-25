@@ -46,6 +46,7 @@ export function listPlaylists() {
                                 clean();
                                 main.clearSelectionMenu();
                                 listPlaylists();
+                                main.choosePage(1);
                             }
                         });
                     } else {
@@ -114,9 +115,13 @@ export function listPlaylists() {
                             for (let index = 0; index <= 20; index++) {
                                 main.makeSelectionItem(`stuff ${index}`, false, () => {});
                             }
+                    
+                            main.choosePage(1);
                         });
                     }
                 });
+                
+                main.choosePage(1);
             }
 
             showSearches();
