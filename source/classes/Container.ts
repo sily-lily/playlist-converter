@@ -418,7 +418,7 @@ export class Container {
         name: string
     ): number {
         let index = 1;
-        for (const [_, [item]] of this.pageItems) {
+        for (const item of this.cache) {
             if (item === name) break;
             index++;
         }
@@ -431,7 +431,7 @@ export class Container {
     ) {
         const item = this.pageItems.get(name);
         const isTextBox = item?.[2] === "Input";
-        for (let index = 0; index <= this.pageItems.size; index++) {
+        for (let index = 0; index <= this.cache.length; index++) {
             this.focusObject(this.fetchSelectionItemFromIndex(index), false, true, isTextBox);
         }
 
@@ -477,11 +477,8 @@ export class Container {
         }
 
         for (const item of this.pageItems) {
-            if (this.inputListeners.has(item[1][0])) {
-                process.stdin.off("keypress", this.inputListeners.get(item[1][0]) as any);
-            } else if (this.itemListeners.has(item[1][0])) {
-                process.stdin.off("keypress", this.itemListeners.get(item[1][0]) as any);
-            }
+            if (this.inputListeners.has(item[1][0])) process.stdin.off("keypress", this.inputListeners.get(item[1][0]) as any);
+            else if (this.itemListeners.has(item[1][0])) process.stdin.off("keypress", this.itemListeners.get(item[1][0]) as any);
         }
 
         this.rescribble();

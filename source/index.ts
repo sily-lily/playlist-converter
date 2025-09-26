@@ -49,73 +49,71 @@ export function listPlaylists() {
                                 main.choosePage(1);
                             }
                         });
+
+                        main.choosePage(1);
                     } else {
                         searchSong(fetchCacheData().translation.musicAppFrom, value).then((value: string[][]) => {
                             clean();
                             main.clearSelectionMenu();
-                            // if (value.length !== 0) {
-                            //     value.forEach((value: string[], _: number) => {
-                            //         const title = `${fetchCacheData().addedSongs.includes(`\"${value[0]}\" by ${value[1]}`) ? "(Selected) " : ""}"${value[0]}" by ${value[1]}`;
-                            //         main.makeSelectionItem(title, false, (pressed: string, key: any) => {
-                            //             if (key === "return" || key === "enter") {
-                            //                 if (fetchCacheData().addedSongs.length === 0) return;
-                            //                 clean();
-                            //                 main.clearSelectionMenu();
-                            //                 switch (outApp().toLowerCase()) {
-                            //                     case "none":
-                            //                         main.makeSelectionItem("Select an app to convert to before making playlists", false, (pressed: string, key: any) => {
-                            //                             if (key === "space" || (key === "return" || key === "enter")) {
-                            //                                 clean();
-                            //                                 main.clearSelectionMenu();
-                            //                             }
-                            //                         });
-                            //                         break;
+                            if (value.length !== 0) {
+                                value.forEach((value: string[], _: number) => {
+                                    const title = `${fetchCacheData().addedSongs.includes(`\"${value[0]}\" by ${value[1]}`) ? "(Selected) " : ""}"${value[0]}" by ${value[1]}`;
+                                    main.makeSelectionItem(title, false, (pressed: string, key: any) => {
+                                        if (key === "return" || key === "enter") {
+                                            if (fetchCacheData().addedSongs.length === 0) return;
+                                            clean();
+                                            main.clearSelectionMenu();
+                                            switch (outApp().toLowerCase()) {
+                                                case "none":
+                                                    main.makeSelectionItem("Select an app to convert to before making playlists", false, (pressed: string, key: any) => {
+                                                        if (key === "space" || (key === "return" || key === "enter")) {
+                                                            clean();
+                                                            main.clearSelectionMenu();
+                                                        }
+                                                    });
+                                                    break;
 
-                            //                     case "token":
-                            //                         main.makeSelectionItem(`Set your ${fetchCacheData().translation.musicAppTo} token in the ".env" file first`, false, (pressed: string, key: any) => {
-                            //                             if (key === "space" || (key === "return" || key === "enter")) {
-                            //                                 clean();
-                            //                                 main.clearSelectionMenu();
-                            //                             }
-                            //                         });
-                            //                         break;
+                                                case "token":
+                                                    main.makeSelectionItem(`Set your ${fetchCacheData().translation.musicAppTo} token in the ".env" file first`, false, (pressed: string, key: any) => {
+                                                        if (key === "space" || (key === "return" || key === "enter")) {
+                                                            clean();
+                                                            main.clearSelectionMenu();
+                                                        }
+                                                    });
+                                                    break;
 
-                            //                     default:
-                            //                         main.makeSelectionItem("test", false, () => {});
-                            //                         break;
-                            //                 }
-                            //             } else if (key === "space") {
-                            //                 let cache = fetchCacheData().addedSongs;
-                            //                 const cleansed = pressed.replace("(Selected) ", "");
-                            //                   if (!cache.includes(cleansed)) cache.push(cleansed); 
-                            //                 else cache = cache.filter(item => item !== cleansed);
-                            //                 modifyCacheData({
-                            //                     addedSongs: cache
-                            //                 });
+                                                default:
+                                                    main.makeSelectionItem("test", false, () => {});
+                                                    break;
+                                            }
+                                        } else if (key === "space") {
+                                            let cache = fetchCacheData().addedSongs;
+                                            const cleansed = pressed.replace("(Selected) ", "");
+                                              if (!cache.includes(cleansed)) cache.push(cleansed); 
+                                            else cache = cache.filter(item => item !== cleansed);
+                                            modifyCacheData({
+                                                addedSongs: cache
+                                            });
 
-                            //                 const text = `${fetchCacheData().addedSongs.includes(cleansed) ? "(Selected) " : ""}${cleansed}`;
-                            //                 main.modify(`${pressed} - Selection Title`, {
-                            //                     text: text.replace(" - Selection Title", "").length > 59 ? text.replace(" - Selection Title", "").slice(0, 55) + " ..." : text.replace(" - Selection Title", "")
-                            //                 });
-                            //             }
-                            //         });
-                            //     });
+                                            const text = `${fetchCacheData().addedSongs.includes(cleansed) ? "(Selected) " : ""}${cleansed}`;
+                                            main.modify(`${pressed} - Selection Title`, {
+                                                text: text.replace(" - Selection Title", "").length > 59 ? text.replace(" - Selection Title", "").slice(0, 55) + " ..." : text.replace(" - Selection Title", "")
+                                            });
+                                        }
+                                    });
+                                });
                                 
-                            //     main.choosePage(1);
-                            // } else {
-                            //     main.makeSelectionItem("No results found; please try again", false, (pressed: string, key: any) => {
-                            //         if ((key === "return" || key === "enter") || key === "space") {
-                            //             clean();
-                            //             main.clearSelectionMenu();
-                            //             listPlaylists();
-                            //         }
-                            //     });
-                            // }
-
-                            for (let index = 0; index <= 20; index++) {
-                                main.makeSelectionItem(`stuff ${index}`, false, () => {});
+                                main.choosePage(1);
+                            } else {
+                                main.makeSelectionItem("No results found; please try again", false, (pressed: string, key: any) => {
+                                    if ((key === "return" || key === "enter") || key === "space") {
+                                        clean();
+                                        main.clearSelectionMenu();
+                                        listPlaylists();
+                                    }
+                                });
                             }
-                    
+
                             main.choosePage(1);
                         });
                     }
@@ -132,6 +130,8 @@ export function listPlaylists() {
                     main.clearSelectionMenu();
                 }
             });
+
+            main.choosePage(1);
         }
     }
 }
