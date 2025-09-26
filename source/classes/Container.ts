@@ -398,21 +398,20 @@ export class Container {
         desiredIndex: number
     ): string {
         this.focusedSelectionItemIndex = desiredIndex;
-        if (this.focusedSelectionItemIndex > this.cache.length) this.focusedSelectionItemIndex = 1;
-        let object = "";
+        let itemName = "";
         let index = 1;
-        for (const [_, [item]] of this.pageItems) {
-            if (this.focusedSelectionItemIndex > this.pageItems.size) this.focusedSelectionItemIndex = 1;
-            if (this.focusedSelectionItemIndex < 1) this.focusedSelectionItemIndex = this.pageItems.size;
+        for (const item of this.cache) {
+            if (this.focusedSelectionItemIndex > this.cache.length) this.focusedSelectionItemIndex = 1;
+            if (this.focusedSelectionItemIndex < 1) this.focusedSelectionItemIndex = this.cache.length;
             if (index === this.focusedSelectionItemIndex) {
-                object = item;
+                itemName = item;
                 break;
             }
 
             index++;
         }
-        
-        return object;
+
+        return itemName;
     }
 
     fetchIndexFromSelectionItem(
