@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sily-lily/playlist-converter.git"
+    "url": "git+https://github.com/transicle/playlist-converter.git"
   },
-  "author": "sily-lily",
+  "author": "transicle",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sily-lily/playlist-converter/issues"
+    "url": "https://github.com/transicle/playlist-converter/issues"
   },
-  "homepage": "https://github.com/sily-lily/playlist-converter#readme",
+  "homepage": "https://github.com/transicle/playlist-converter#readme",
   "devDependencies": {
     "@types/node": "^24.3.1"
   },
